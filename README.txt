@@ -1,0 +1,1 @@
+To start the data treatment, extract the data given by instagram in the "raw" file, then run the main script.
