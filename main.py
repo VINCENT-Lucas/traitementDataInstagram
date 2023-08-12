@@ -1,20 +1,9 @@
-import datetime, time
-
 import os
-import json
-from collections import Counter
 global userName, dirPaths
 
 from code.html import *
 from code.utilitaries import *
 from code.treatment import *
-
-
-
-'''//TODO
-- All done :)
-05/07/2023, VINCENT Lucas
-'''
 
 ''' Trouve les chemins des dossiers inbox.
 Attention: ce fichier doit se trouver à la racine du dossier instaData.'''
@@ -31,14 +20,22 @@ def find_inbox_directories():
 # On crée les différents dossiers et on stocke leurs chemins dans le dictionnaire dirPaths
 dirPaths = create_dirs(getCurrentDirPath(__file__))
 
-# Initialisation des variables
-wordCounterDic, messageAmountDic, conversationAgeDic, usersInfoDic, sentMsgTimeTableDic, receivedMsgTimeTableDic  = {}, {}, {}, {}, {}, {}
+# Initialisation des variables : 
+# wordCounterDic: associe à chaque mot employé le nombre d'emplois
+# conversationSizeDic: associe à chaque conversations le nombre de messages envoyés sous forme de tuple (utilisateur, reste de la conv.)
+# conversationAgeDic: associe à chaque conversation son âge (datetime)
+# usersInfoDic: associe à chaque nom de fichier le nom d'utilisateur associé
+# sentMsgTimeTableDic, receivedMsgTimeTableDic: associe à chaque heure de la journée les nombres de messages envoyés et reçus
+# conversationMaxStreakDic: associe à chaque conversation sa plus grande série de jours de discussion
+# amountOfParticipantsDic: associe à chaque conversation son nombre de participants
+wordCounterDic, conversationSizeDic, conversationAgeDic, usersInfoDic, sentMsgTimeTableDic, receivedMsgTimeTableDic  = {}, {}, {}, {}, {}, {}
+conversationMaxStreakDic, complicityScoreDic, amountOfParticipantsDic, amountOfMessPerDayDic = {}, {}, {}, {}
 inbox_directories = find_inbox_directories()
 username = get_self_username(inbox_directories)
 
 jsonList = getAllConversationFiles(inbox_directories)
 
-treatment(jsonList, username, wordCounterDic, sentMsgTimeTableDic, receivedMsgTimeTableDic)
+treatment(jsonList, username, wordCounterDic, sentMsgTimeTableDic, receivedMsgTimeTableDic, amountOfParticipantsDic)
 
 for inbox_directory in inbox_directories:
     for root, dirs, files in os.walk(inbox_directory):
@@ -49,24 +46,21 @@ for inbox_directory in inbox_directories:
                     file_path = os.path.join(root, file_name)
                     jsonList.append(file_path)
             if jsonList:
-                ConversationfilesProcess(jsonList, messageAmountDic, wordCounterDic, conversationAgeDic, dirName, usersInfoDic, username, dirPaths)
+                ConversationTreatment(jsonList, conversationSizeDic, wordCounterDic, conversationAgeDic, dirName, usersInfoDic, username, dirPaths, conversationMaxStreakDic, amountOfMessPerDayDic)
 
-sortedMessAmount = dict(sorted(messageAmountDic.items(), key=lambda x: x[1], reverse=True))
-title = "Top conversations."
-generate_html(sortedMessAmount, "messageCount.html", title, dirPaths)
+computeComplicityScores(complicityScoreDic, amountOfParticipantsDic, conversationAgeDic, conversationSizeDic, conversationMaxStreakDic)
 
-title = "Mots les plus utilisés"
-sortedWord_counter = orderDic(wordCounterDic)
-generate_html(sortedWord_counter, "wordCounter.html", title, dirPaths)
+generate_html(orderDic(mergeDic(conversationSizeDic)), "messageCount.html", "Top conversations.", dirPaths)
 
-title = "Age des conversations"
+generate_html(orderDic(wordCounterDic), "wordCounter.html", "Mots les plus utilisés", dirPaths)
+
 sortedConversationAge = orderDic(conversationAgeDic, False)
 for key in sortedConversationAge:
-    sortedConversationAge[key] = convert_timestamp(sortedConversationAge[key])
-generate_html(sortedConversationAge, "convAge.html", title, dirPaths)
+    sortedConversationAge[key] = convertTimestamp(sortedConversationAge[key])
+generate_html(sortedConversationAge, "convAge.html", "Age des conversations", dirPaths)
 
-generate_conv_menu(usersInfoDic, dirPaths)
+generateConvMenu(usersInfoDic, dirPaths)
 
-generateTimeTable(sentMsgTimeTableDic, receivedMsgTimeTableDic, os.path.join(dirPaths['Menus'], "accountData.html"))
+generateAccountData(username, complicityScoreDic, conversationAgeDic, conversationSizeDic, conversationMaxStreakDic, sentMsgTimeTableDic, receivedMsgTimeTableDic, amountOfMessPerDayDic, sentMsgTimeTableDic, os.path.join(dirPaths['Menus'], "accountData.html"))
 
 generate_index(dirPaths, username)
