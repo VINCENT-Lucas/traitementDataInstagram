@@ -54,25 +54,18 @@ def getCurrentDirPath(file):
         path = path[:-1]
     return path
 
-''' Stocke le nombre d'occurences d'éléments d'une liste dans un dictionnaire.'''
-def updateDict(dict, list):
-    for elem in list:
-        if elem in dict:
-            dict[elem] += 1
-        else:
-            dict[elem] = 1
-
 ''' On associe à un nom de fichier le nom de la conversation.'''
 def updateUserInfo(userInfo, fileName, conversationName):
     if fileName not in userInfo:
         userInfo[fileName] = conversationName
 
 ''' On actualise le compteur de messages pour chaque utilisateurs'''
-def updateMessageAmount(messageAmountDic, conversationName, messages):
-    if conversationName in messageAmountDic:
-      messageAmountDic[conversationName] += len(messages)
+def updateMessageAmount(messageAmountDic, convData):
+    if convData["conversationName"] in messageAmountDic:
+      messageAmountDic[convData["conversationName"]] = (messageAmountDic[convData["conversationName"]][0] + convData["amountOfSentMsg"],
+      messageAmountDic[convData["conversationName"]][1] + convData["amountOfReceivedMsg"])
     else:
-      messageAmountDic[conversationName] = len(messages)
+      messageAmountDic[convData["conversationName"]] = (convData["amountOfSentMsg"], convData["amountOfReceivedMsg"])
 
 ''' On convertit un nombre de ms en Jours, Heures, Minutes, Secondes'''
 def msToTime(ms):
@@ -136,8 +129,12 @@ def nextDay(date_str):
   return newDateStr
 
 ''' Reformate une date au format JJ/MM/YYYY HH/MM'''
-def convert_timestamp(dateTime):
+def convertTimestamp(dateTime):
     return dateTime.strftime("%d/%m/%Y, %Hh%M")
+
+''' Convertit un dateTime en nombre de jours'''
+def dateTimeToDays(dateTime):
+  return int((datetime.datetime.now()-dateTime).days)
 
 ''' Renvoie l'heure associée à un timestamp, au format HH/MM '''
 def timeStampToHour(timestamp):
@@ -160,7 +157,6 @@ def create_dirs(path):
       dirPaths[name] = folder_path
     
     return dirPaths
-
 
 # --------------------- Dictionnaires ------------------
 '''Calcule la somme des valeurs d'un dictionnaire'''
@@ -203,3 +199,43 @@ def dicToPercentageDic(dic):
 ''' Renvoie le maximal des valeurs d'un dictionnaire '''
 def dicGetMaxValue(dic):
   return max(dic.values())
+
+''' Renvoie le minimal des valeurs d'un dictionnaire '''
+def dicGetMinValue(dic):
+  return min(dic.values())
+
+''' Renvoie la clef associée à la valeur max. d'un dictionnaire '''
+def dicGetMaxKey(dic):
+  max = dicGetMaxValue(dic)
+  for key in dic:
+     if dic[key] == max:
+        return key
+
+''' Renvoie la clef associée à la valeur min. d'un dictionnaire '''
+def dicGetMinKey(dic):
+  min = dicGetMinValue(dic)
+  for key in dic:
+     if dic[key] == min:
+        return key
+
+''' Stocke le nombre d'occurences d'éléments d'une liste dans un dictionnaire.'''
+def updateDict(dict, list):
+    for elem in list:
+        if elem in dict:
+            dict[elem] += 1
+        else:
+            dict[elem] = 1
+
+''' Somme les valeurs des tuples de valeurs d'un dictionnaire '''
+def mergeDic(dic):
+  merged = {}
+  for key in dic:
+    merged[key] = dic[key][0] + dic[key][1]
+  return merged
+
+''' Renvoie la somme des i-emes valeurs des tuples d'un dictionnaire '''
+def sumDicI(dic, i):
+  sum = 0
+  for key in dic:
+    sum += dic[key][i]
+  return sum
