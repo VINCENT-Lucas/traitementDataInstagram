@@ -1,5 +1,5 @@
 import os
-import datetime, time
+
 from code.utilitaries import *
 
 global emptyCase, greyCase
@@ -10,7 +10,7 @@ greyCase = '<td class="grey"></td>'
 # --------------------- Répartition horaire ---------------------
 
 ''' Header du timeTable '''
-def timeTableGetHeader():
+def AccountDataGetHeader():
   return '''<!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +21,12 @@ def timeTableGetHeader():
       text-align: center; /* Centrer le titre */
       color: #2d2c2c; /* Couleur du texte de l'en-tête */
       text-shadow: 1px 1px 2px #000; /* Ajouter une ombre au texte */
+    }
+    .highlight {
+      text-align: center;
+      padding: 5px;
+      font-size: 20px;
+      font-weight: bold;
     }
     .table {
       border-collapse: collapse;
@@ -33,27 +39,12 @@ def timeTableGetHeader():
       border-right: 4px solid black; /* Bordure à droite */
       border-left: 4px solid black;  /* Bordure à gauche */
     }
-    .table .grey {
-      background-color: grey;
-    }
-    .table .bottomLine {
-      border: none;
-      border-bottom: 4px solid black; 
-    }
-    .table .number {
-      text-align: center;
-      font-weight: bold;
-    }
     .table .number-cell {
       border: none;
     }
     .container {
       display: flex;
       align-items: center;
-    }
-    .text {
-      margin-right: 10px;
-      font-weight: bold;
     }
     body {
       background-color: #d8ecf1; /* Couleur de fond de la page */
@@ -105,26 +96,38 @@ def generateGraph(dataDic):
   return htmlCode
 
 ''' Horaires d'envoi/Réception des messages'''
-def generateTimeTable(sentDic, receivedDic, path):
+def generateAccountData(username, complicityScoreDic, conversationAgeDic, conversationSizeDic, conversationMaxStreakDic, sentDic, receivedDic, amountOfMessPerDayDic, sentMsgTimeTableDic, path):
     # Début de la construction du code HTML
-    html_code = timeTableGetHeader()
+    htmlCode = AccountDataGetHeader()
 
-    html_code += '<body>\n'
+    htmlCode += '<body>\n'
+    htmlCode += f'\t<header>\n<h1> {username} </h1>\n</header>\n'
+
+    htmlCode += f'<div class="highlight"> Meilleure conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{dicGetMaxKey(complicityScoreDic)}</span> ({dicGetMaxValue(complicityScoreDic)}☆)</div>\n'
+    htmlCode += f'<div class="highlight"> Plus ancienne conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{dicGetMinKey(conversationAgeDic)}</span> ({dateTimeToDays(dicGetMinValue(conversationAgeDic))}j)</div>\n'
+    htmlCode += f'<div class="highlight"> Plus longue conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{dicGetMaxKey(mergeDic(conversationSizeDic))}</span> ({dicGetMaxValue(mergeDic(conversationSizeDic))} messages)</div>\n'
+    htmlCode += f'<div class="highlight"> Conversation la plus stable: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{dicGetMaxKey(conversationMaxStreakDic)}</span> ({dicGetMaxValue(conversationMaxStreakDic)}j de conversation à la suite)</div>\n'
+
+    htmlCode += f'<div class="highlight"> Nombre de messages envoyés: {sumDicI(conversationSizeDic, 0)}</div>'
+    htmlCode += f'<div class="highlight"> Nombre de messages reçus: {sumDicI(conversationSizeDic, 1)}</div>'
+    htmlCode += f'<div class="highlight"> Nombre de conversations: {len(conversationAgeDic)}</div>'
+    htmlCode += f'<div class="highlight"> Jour le plus actif: {dicGetMaxKey(amountOfMessPerDayDic)}, {dicGetMaxValue(amountOfMessPerDayDic)} messages envoyés</div>'
+    htmlCode += f'<div class="highlight"> Période la plus active de la journée: {dicGetMaxKey(sentMsgTimeTableDic)} ({dicGetMaxValue(dicToPercentageDic(sentMsgTimeTableDic))}% des messages)</div>'
 
     # Ajout du titre
-    html_code += '\t<header>\n<h1> Nombre de messages envoyés par heure. </h1>\n</header>\n'
+    htmlCode += '\t<header>\n<h1> Nombre de messages envoyés par heure. </h1>\n</header>\n'
     
     # Ajout d'un graphe
-    html_code += generateGraph(orderDicKeys(sentDic))
+    htmlCode += generateGraph(orderDicKeys(sentDic))
 
-    html_code += '\t<header>\n<h1> Nombre de messages reçus par heure. </h1>\n</header>\n'
-    html_code += generateGraph(orderDicKeys(receivedDic))
+    htmlCode += '\t<header>\n<h1> Nombre de messages reçus par heure. </h1>\n</header>\n'
+    htmlCode += generateGraph(orderDicKeys(receivedDic))
     
     # Fin du body 
-    html_code += '\n</body>'
+    htmlCode += '\n</body>'
 
     with open(path, 'w', encoding="utf-8") as writingFile:
-      writingFile.write(html_code)
+      writingFile.write(htmlCode)
   
 
 # --------------------- Calendrier -------------------
@@ -262,7 +265,7 @@ def writeCalendar(daysList, link, convData, nextDay, dirPaths, name):
 # --------------------- Conversations --------------
 
 ''' [HTML] Le début des fichiers HTML du dossier Conversations'''
-def getHTMLConvBeginning(conversationName):
+def getHTMLConvHeader(conversationName):
     return f'''<!DOCTYPE html>
 <html>
 <head>
@@ -302,8 +305,6 @@ def getHTMLConvBeginning(conversationName):
     }}
   </style>
 </head>
-<body>
-  <div class="container">
     '''
 
 ''' [HTML] Génère le compteur de mots'''
@@ -471,8 +472,8 @@ def generate_index(dirPaths, username):
     <a href="{dirPaths['Menus']}\messageCount.html" class="button">Voir les plus longues conversations</a>
     <a href="{dirPaths['Menus']}\convAge.html" class="button">Conversations les plus anciennes</a>
     <a href="{dirPaths['Menus']}\wordCounter.html" class="button">Liste des mots les plus utilisés</a>
-    <a href="{dirPaths['Menus']}\convMenu.html" class="button">Lire les conversations</a>
-    <a href="{dirPaths['Menus']}\\accountData.html" class="button">Données du comptes</a>
+    <a href="{dirPaths['Menus']}\convMenu.html" class="button">Voir les conversations</a>
+    <a href="{dirPaths['Menus']}\\accountData.html" class="button">Données du compte</a>
   </div>
 
   <div class="image-container">
@@ -488,7 +489,7 @@ def generate_index(dirPaths, username):
 # ------------------ Fichier ConvMenu -----------------------
 
 ''' [HTML] Génère le menu des conversations convMenu.html'''
-def generate_conv_menu(usersInfo, dirPaths):
+def generateConvMenu(usersInfo, dirPaths):
   html_content = '''<!DOCTYPE html>
   <html>
   <head>
@@ -549,35 +550,61 @@ def generate_conv_menu(usersInfo, dirPaths):
 
 # ------------------ Fichier Données ----------------
 
-''' [HTML] Affichage d'un fichiers HTML du dossier Données'''
-def htmlOutputData(list, fileName, convName, dirPaths):
-  txt = '''<!DOCTYPE html>
+def dataGetHeader():
+  return '''<!DOCTYPE html>
 <html>
 <head>
   <title>Données de conversation</title>
   <meta charset="utf-8">
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
     header {
       font-weight: bold;
-      text-align: center; /* Centrer le titre */
-      color: #2d2c2c; /* Couleur du texte de l'en-tête */
-      text-shadow: 1px 1px 2px #000; /* Ajouter une ombre au texte */
+      text-align: center;
+      color: #333;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-shadow: 1px 1px 2px #000;
+    }
+    .container {
+      display: flex;
+      justify-content: space-around;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .column {
+      flex: 1;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h2 {
+      color: #555;
     }
     ul {
-      list-style-type: none;
+      list-style: none;
       padding: 0;
-      margin: 0;
     }
     li {
       margin-bottom: 10px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      background-color: #f7f7f7;
-      font-family: Arial, sans-serif;
+      color: #666;
+    }
+    .table {
+      border-collapse: collapse;
+      margin-left: auto;
+      margin-right: auto;
     }
     .button-container {
       text-align: center;
       margin-top: 20px;
+      margin-bottom: 40px;
     }
     .button {
       padding: 10px 20px;
@@ -586,94 +613,122 @@ def htmlOutputData(list, fileName, convName, dirPaths):
       text-decoration: none;
       font-size: 16px;
       border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #639e6e;
     }
   </style>
 </head>
-<body>'''
-  txt += f'<header>\n<h1>{convName}</h1>\n</header>\n'
-  txt += "<ul>"
-  for elem in list:
-    txt += "<li>" + elem + "</li>"
-  txt += "</ul>\n"
-  txt += '<div class="button-container">\n'
-  txt += f'<a href="{os.path.join(dirPaths["Calendar"], fileName+".html")}" class="button">Voir le calendrier</a>\n'
+'''
+
+''' [HTML] Affichage d'un fichiers HTML du dossier Données'''
+def htmlOutputData(listUser1, listUser2, listGlobal, fileName, convName, dirPaths, hoursDic, username):
+  txt = dataGetHeader()
+  txt += f'<body>\n<header>\n\t<h1>Données de conversation: {convName}</h1>\n</header>\n'
+  
+  # Partie user1
+  txt += f'<div class="container">\n<div class="column">\n<h2>{username}</h2>\n<ul>\n'
+  for line in listUser1:
+    txt += f'<li>{line}</li>\n'
+  txt += '</ul>\n</div>\n'
+
+  # Partie user2
+  txt += f'<div class="column">\n<h2>{convName}</h2>\n<ul>\n'
+  for line in listUser2:
+    txt += f'<li>{line}</li>\n'
+  txt += '</ul>\n</div>\n'
+
   txt += '</div>\n'
+
+  # Partie globale
+  txt += '<div class="container">\n<div class="column">\n<ul>\n'
+  for line in listGlobal:
+    txt += f'<li>{line}</li>\n'
+  txt += '</ul>\n</div>\n</div>\n'
+
+  txt += '<div class="button-container">\n'
+  txt += f'\t<a href="{os.path.join(dirPaths["Calendar"], fileName+".html")}" class="button">Voir le calendrier</a>\n'
+  txt += f'\t<a href="{os.path.join(dirPaths["Words"], fileName+".html")}" class="button">Mots les plus utilisés</a>\n</div>\n'
+
+  txt += '\n<header>\n<h1>Répartition des messages</h1>\n</header>\n'
+  txt += generateGraph(orderDicKeys(hoursDic))
+
   txt += "</body>\n</html>"    
   return txt
 
 ''' [HTML] Ecriture des données dans le fichier correspondant'''
-def writeDataConversation(fileName, convData,  calendarList, dirPaths, username):
+def writeDataConversation(fileName, convData,  calendarList, dirPaths, username, hoursDic):
     conversationName = convData["conversationName"]
     with open(os.path.join(dirPaths['Données'], fileName+'.html'), 'w', encoding="utf-8") as writingFile:
 
-      list = [f"[{username}] Nombre de messages envoyés: {convData['amountOfSentMsg']}", f"[{conversationName}] Nombre de messages envoyés: {convData['amountOfReceivedMsg']}"]
-      
+      listUser1 = [f"Nombre de messages envoyés: {convData['amountOfSentMsg']}."]
+      listUser2 = [f"Nombre de messages envoyés: {convData['amountOfReceivedMsg']}."]
+
       meanAnsTime = convData['timeBeforeAnswering']/convData['amountOfSentAns'] if convData['amountOfSentAns']!=0 else 0
-      list.append(f"[{username}] Temps moyen de réponse: {msToTime(meanAnsTime)}")
+      listUser1.append(f"Temps moyen de réponse: {msToTime(meanAnsTime)}.")
       
       meanAnsTime = convData['timeBeforeGettingAnswered']/convData['amountOfReceivedAns'] if convData['amountOfReceivedAns'] !=0 else 0
-      list.append(f"[{conversationName}] Temps moyen de réponse: {msToTime(meanAnsTime)}")
+      listUser2.append(f"Temps moyen de réponse: {msToTime(meanAnsTime)}.")
       
       daysList = extractDays(calendarList)
 
       meanAnsLength = convData["sizeOfSentMessages"]/convData['amountOfSentMsg'] if convData['amountOfSentMsg'] !=0 else 0
-      list.append(f"[{username}] Taille moyenne des messages: {int(meanAnsLength)} caractères.")
+      listUser1.append(f"Taille moyenne des messages: {int(meanAnsLength)} caractères.")
       meanAnsLength = convData["sizeOfReceivedMessages"]/convData['amountOfReceivedMsg'] if convData['amountOfReceivedMsg'] !=0 else 0
-      list.append(f"[{conversationName}] Taille moyenne des messages: {int(meanAnsLength)} caractères.")
+      listUser2.append(f"Taille moyenne des messages: {int(meanAnsLength)} caractères.")
 
+      listGlobal = []
       mostActiveDay, messageAmount = mostCommonElement(daysList)
       if mostActiveDay:
-        list.append(f"Jour de la plus longue discussion: {mostActiveDay}, nombre de messages: {messageAmount}.")
+        listGlobal.append(f"Jour de la plus longue discussion: {mostActiveDay}: {messageAmount} messages.")
       else:
-         list.append(f"Jour de la plus longue discussion: Aucun.")
-      for i in range(len(list)):
-        list[i] = list[i]
-      list.append(f"Plus grande période de conversation: {convData['biggestStreak']} jours.\n")
-      writingFile.write(htmlOutputData(list, fileName, conversationName, dirPaths))
+        listGlobal.append(f"Jour de la plus longue discussion: Aucun.")
+      
+      listGlobal.append(f"Plus grande période de conversation: {convData['biggestStreak']} jours.\n")
+      writingFile.write(htmlOutputData(listUser1, listUser2, listGlobal, fileName, conversationName, dirPaths, hoursDic, username))
+
+# ------------------ Autres -----------------------
 
 
-'''Prend un dictionnaire comportant un compteur de mots ainsi que la somme totale des mots et associe à chaque mot sa part de présence'''
-def turnIntoPart(dictionary, sum):
-  partDic = {}
-  for key, value in dictionary.items():
-    partDic[key] = value/sum
-  return partDic
+
+# ---------------------- Words ------------------- 
+
+''' [HTML] Affichage d'un fichiers HTML du dossier Words'''
+def htmlOutputWords(list, convName):
+  txt = dataGetHeader()
+  txt += f'<body>\n<header>\n<h1>{convName}: mots les plus utilisés</h1>\n</header>\n'
+  txt += "<ul>"
+  for elem in list:
+    txt += "<li>" + elem + "</li>"
+  txt += "</ul>\n"
+
+  txt += "</body>\n</html>"    
+  return txt
 
 ''' Trie les ratios des valeurs de 2 dictionnaires par clefs données par ordre décroissant. '''
-def getBiggestDifference(dic1, dic2, globalSum, convSum):
+def generateRatio(globalCounterDic, convCounterDic):
   finalDic = {}
-  for key in dic2:
-    if key not in dic1:
+  for key in convCounterDic:
+    if key not in globalCounterDic or globalCounterDic[key] == convCounterDic[key]:
       finalDic[key] = 0
     else:
-      finalDic[key] = (dic2[key]/dic1[key])/(globalSum/convSum)
-      if finalDic[key] >= 1:
-        finalDic[key] = 0
+      finalDic[key] = (convCounterDic[key]/globalCounterDic[key])
   
   return orderDic(finalDic)
-      
-def generateWordFile():
-  return '''
 
-'''
-
-''' Ecriture dans les fichiers du dossier Words des mots les plus utilisés dans une conversation.
-/TODO ATTENTION: les mots accentués d'une conversation ne sont pas retrouvés dans le dictionnaire global.'''
-def writeMostUsedWords(conversationWordCounter, wordCounterDic, path, conversationName, fileName, dirPaths):
-  globalSum, convSum = sumOfDict(wordCounterDic), sumOfDict(conversationWordCounter)
-  globalPart = turnIntoPart(wordCounterDic, globalSum)
-  convPart = turnIntoPart(conversationWordCounter, convSum)
-
-  differencesDic = getBiggestDifference(globalPart, convPart, globalSum, convSum)
+''' Ecriture dans les fichiers du dossier Words des mots les plus utilisés dans une conversation. '''
+def writeMostUsedWords(conversationWordCounter, wordCounterDic, path, conversationName, fileName, dirPaths, hoursDic):
+  differencesDic = generateRatio(wordCounterDic, conversationWordCounter)
   list, count = [], 0
   
   for key, value in differencesDic.items():
-    list.append(str(key) + ":" + str(value))
-    count += 1
+    if int(100*value) != 0:
+      list.append(str(key) + ": " + str(int(100*value)) + '%')
+      count += 1
     if count > 50:
       break
   
   with open(path, 'w', encoding="utf-8") as writingFile:
-    writingFile.write(htmlOutputData(list, fileName, conversationName, dirPaths))
-
-
+    # Il faut utiliser une autre fonction que htmlOutputData()
+    writingFile.write(htmlOutputWords(list, conversationName))
