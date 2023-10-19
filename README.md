@@ -5,3 +5,4 @@ Instagram permet de récupérer ses propre données personnelles. J'ai décidé 
 Pour commencer 
 # Lancer le traitement
 Pour commencer le traitement, extraire le fichier donné par instagram dans le dossier "raw", puis exécuter le fichier "main".
+![Texte alternatif](assets/image.png)
