@@ -4,6 +4,7 @@ Voici les données auxquelles on a accès.
 
 ## Données globales du compte
 ![Données globales du compte](assets/globalData.png)
+
 Il s'agit d'un récapitulatif de certaines données de l'ensemble des conversations d'un compte.
 Un "score de conversation" est calculé pour chaque conversation, en fonction de la taille de la conversation, de sa fréquence et de son ancienneté.
 Le graphique affiché montre le nombre de messages envoyés à chaque tranche horaire.
@@ -16,10 +17,12 @@ Le graphique affiché montre le nombre de messages envoyés à chaque tranche ho
 ![Plus anciennes conversations](assets/ConvAge.png)
 
 # Accès aux différentes conversations et données associées
-![Calendar](assets/convCalendar.png)
+![Calendar](assets/ConvCalendar.png)
+
 Pour chaque conversation, un calendrier est généré, avec une case verte pour les jours où il y a eu un message dans la conversation, et une rouge lorsqu'il n'y en a pas eu.
 Cliquer sur une case verte du calendrier ouvre la conversation à la date souhaitée:
-![Exemple de conversation](assets/convExample.png)
+![Exemple de conversation](assets/ConvExample.png)
+
 Un résumé des données propre à la conversation uniquement est aussi disponible:
 ![Données de conversation](assets/ConvData.png)
 
