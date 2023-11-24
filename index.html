@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mes données Instagram</title>
+  <meta charset="utf-8">
+  <style>
+    header {
+      font-family: Georgia, serif;
+      font-weight: bold;
+      font-size: 40px;
+      margin-top: 50px;
+      text-align: center;
+      color: #2d2c2c;
+      text-shadow: 0px 0px 0px #000;
+    }
+    tag {
+      font-family: Georgia, serif;
+      font-weight: bold;
+      font-size: 40px;
+      text-align: center;
+      color: #2d2c2c;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 50px 100px 0px 100px;
+    }
+    .button-container a {
+      text-decoration: none;
+      margin: 10px 0;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3b3e3e63;
+      color: #ffffff;
+      border-radius: 4px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #E2A9F3;
+    }
+    .background-image {
+      background-image: url('images/background.jpg');
+      background-size: cover;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 40vh;
+      margin-top: 50px;
+    }
+    .image-container img {
+      max-width: 5%;
+      max-height: 5%;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-image"></div>
+
+  <header>Mes données Instagram</header>
+
+  <div class="button-container">
+    <a href="C:\Users\loual\Desktop\instaData2\Menus\messageCount.html" class="button">Voir les plus longues conversations</a>
+    <a href="C:\Users\loual\Desktop\instaData2\Menus\convAge.html" class="button">Conversations les plus anciennes</a>
+    <a href="C:\Users\loual\Desktop\instaData2\Menus\wordCounter.html" class="button">Liste des mots les plus utilisés</a>
+    <a href="C:\Users\loual\Desktop\instaData2\Menus\convMenu.html" class="button">Voir les conversations</a>
+    <a href="C:\Users\loual\Desktop\instaData2\Menus\accountData.html" class="button">Données du compte</a>
+  </div>
+
+  <div class="image-container">
+    <img src="images/instagramIcon.png" alt="Image">
+    <tag>@Lucas</tag>
+  </div>
+</body>
+</html>
