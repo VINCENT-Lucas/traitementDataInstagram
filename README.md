@@ -19,11 +19,13 @@ Le graphique affiché montre le nombre de messages envoyés à chaque tranche ho
 # Accès aux différentes conversations et données associées
 ![Calendar](assets/ConvCalendar.png)
 
-Pour chaque conversation, un calendrier est généré, avec une case verte pour les jours où il y a eu un message dans la conversation, et une rouge lorsqu'il n'y en a pas eu.
+Pour chaque conversation, un calendrier est généré, avec une case verte pour les jours où il y a eu un message dans la conversation, et une rouge dans les cas contraires.
 Cliquer sur une case verte du calendrier ouvre la conversation à la date souhaitée:
+
 <img src="assets/ConvExample.png" width="500">
 
 Un résumé des données propre à la conversation uniquement est aussi disponible:
+
 ![Données de conversation](assets/ConvData.png)
 
 # Langages utilisés
