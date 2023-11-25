@@ -8,4 +8,5 @@ from .Calendar import *
 from .Message import *
 from .Discussion import *
 from .Timer import *
-from .Dictionnary import *
+from .WordFrequence import *
+from .OrderedDict import *

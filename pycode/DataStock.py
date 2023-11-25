@@ -19,9 +19,10 @@ class DataStock:
         self.mostAncientDiscussion = None
         self.biggestDiscussion = None
         
-
+        self.sumOfWordsSaid = 0
         self.searchJsonFiles()
         self.accountOwner = self.getAccountOwner()
+        
     
     def getAccountOwner(self):
         possibilities = self.discussionsList[0].participants
@@ -80,8 +81,10 @@ class DataStock:
       self.wordsSaidAmount = dict(sorted(self.wordsSaidAmount.items(), key=lambda item: item[1], reverse=True))
       self.wordsReceivedAmount = dict(sorted(self.wordsReceivedAmount.items(), key=lambda item: item[1], reverse=True))
 
+      self.sumOfWordsSaid = sumOfDict(self.wordsSaidAmount)
       fileManager.writeAllFiles()
       
+
       if display:
         print(f"\nChargement termine: {timer.stop(2)}s")
     

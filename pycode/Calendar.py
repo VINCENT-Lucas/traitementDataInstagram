@@ -4,12 +4,6 @@ from .Html import *
 class Calendar:
   def __init__(self) -> None:
     self.biggestStreak = 0
-  
-  def getDaysListFromSet(self, daysSet):
-    daysList = []
-    for elem in daysSet:
-      daysList.append(elem)
-    return 
     
   def writeCalendar(self, daysList, discussion, fileManager):
       with open(os.path.join(fileManager.calendarPath, discussion.dirName + '.html'), 'w', encoding="utf-8") as dataFile:

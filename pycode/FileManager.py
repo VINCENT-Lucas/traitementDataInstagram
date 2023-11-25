@@ -2,6 +2,8 @@ import os, datetime
 from .Calendar import *
 from .Html import *
 from .Display import *
+from .WordFrequence import *
+from .OrderedDict import *
 
 class FileManager:
     def __init__(self, root, data) -> None:
@@ -175,15 +177,18 @@ class FileManager:
             writingFile.write(txt)
 
     def writeDiscMostUsedWords(self, discussion):
-        dicWords = {}
-        differencesDic = generateRatio(self.data.wordsSaidAmount, discussion.wordsSaidAmount)
-        list, count = [], 0
-  
-        for key, value in differencesDic.items():
-            if int(100*value) != 0:
-                dicWords[str(key)] = str(int(100*value)) + '%'
-                count += 1
-                if count > 50:
-                    break
-        self.generateRankingFile(self.wordsPath, dicWords, f"{discussion.title}: Mots les plus représentatifs", discussion.dirName)
+        orderedDict = OrderedDict(length=50)
+        cSize = sumOfDict(discussion.wordsSaidAmount)
+        for word, quantity in discussion.wordsSaidAmount.items():
+            wordFreq = WordFrequence(word, quantity, self.data.wordsSaidAmount[word], cSize, self.data.sumOfWordsSaid)
+            wordWeight = wordFreq.getWeight()
+            orderedDict.add(word, wordWeight)
+        
+        dic = {}
+        for key in orderedDict.getDict():
+          quantity = discussion.wordsSaidAmount[key]
+          wf = WordFrequence(key, quantity, self.data.wordsSaidAmount[key], cSize, self.data.sumOfWordsSaid)
+          dic[key] = f"{wf.convPercentage():.2f}%, *{wf.convCoeff():.2f}"
+
+        self.generateRankingFile(self.wordsPath, dic, f"{discussion.title}: Mots les plus représentatifs", discussion.dirName)
        
