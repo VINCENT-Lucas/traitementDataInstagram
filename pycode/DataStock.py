@@ -2,28 +2,30 @@ import os, json, time, datetime
 from .util import *
 from .Discussion import *
 from.Timer import * 
-    
+from .Emoji import *
+from .SelfOtherDic import *
+
 class DataStock:
     def __init__(self) -> None:
         self.discussionsList = []
+        
+        self.wordsSaidAmount = SelfOtherDic()
+        self.sentMessagesDic = SelfOtherDic({f"{hour:02d}h": 0 for hour in range(24)}, {f"{hour:02d}h": 0 for hour in range(24)})
+        
+        self.emojisDic = {}
         self.amountOfMessagesPerDay = {}
-        self.wordsSaidAmount = {}
-        self.wordsReceivedAmount = {}
         self.discussionsSizes = {}
         self.discussionsAges = {}
-        self.sentMessagesDic = {f"{hour:02d}h": 0 for hour in range(24)}
-        self.receivedMessagesDic = {f"{hour:02d}h": 0 for hour in range(24)}
-        self.amountOfSentMessages = 0
-        self.amountOfReceivedMessages = 0
+        self.amountOfSentMessages = {'self': 0, 'other': 0}
+
+        self.sumOfWordsSaid = 0
         self.mostStableDiscussion = None
         self.mostAncientDiscussion = None
         self.biggestDiscussion = None
         
-        self.sumOfWordsSaid = 0
         self.searchJsonFiles()
         self.accountOwner = self.getAccountOwner()
         
-    
     def getAccountOwner(self):
         possibilities = self.discussionsList[0].participants
         for discussion in self.discussionsList[1:]:
@@ -64,49 +66,55 @@ class DataStock:
         self.discussionsSizes[discussion.title] = len(discussion.messagesList)
         self.discussionsAges[discussion.title] = discussion.beginningTimeCode
 
+
+        discussion.wordsSaidAmount.own = {}
+        discussion.wordsSaidAmount.others = {}
         for message in discussion.messagesList:
             self.treatMessage(message, discussion)
-
-        updateDictFromDict(self.wordsSaidAmount, discussion.wordsSaidAmount)
-        updateDictFromDict(self.wordsReceivedAmount, discussion.wordsReceivedAmount)
+        
+        self.wordsSaidAmount.addSelf(discussion.wordsSaidAmount.own)
 
         if display:
             str = f"Chargement conversations: {i}/{discussionAmount} {discussion.title}"
-            print(f"{str} {(strlen-len(str))*' '}", end='\r')
+            print(f"{str}  {(strlen-len(str))*' '}", end='\r')
             strlen = len(str)
         
       self.getRecords()
       self.discussionsSizes = dict(sorted(self.discussionsSizes.items(), key=lambda item: item[1], reverse=True))
       self.discussionsAges = convertTimeStampDicToDates(self.discussionsAges)
-      self.wordsSaidAmount = dict(sorted(self.wordsSaidAmount.items(), key=lambda item: item[1], reverse=True))
-      self.wordsReceivedAmount = dict(sorted(self.wordsReceivedAmount.items(), key=lambda item: item[1], reverse=True))
+      
+      self.sumOfWordsSaid = sumOfDict(self.wordsSaidAmount.own)
+      self.wordsSaidAmount.sort()
+      self.emojisDic = dict(sorted(self.emojisDic.items(), key=lambda item: item[1], reverse=True))
 
-      self.sumOfWordsSaid = sumOfDict(self.wordsSaidAmount)
       fileManager.writeAllFiles()
       
-
       if display:
         print(f"\nChargement termine: {timer.stop(2)}s")
     
     def treatMessage(self, message, discussion):
         updateDict(discussion.discussionSizePerDay, [datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%d/%m/%Y")])
+        emoji = Emoji()
         if message.sender == self.accountOwner:
-            updateDict(discussion.messagesAmount, ['self']) 
-            self.amountOfSentMessages += 1
-            self.sentMessagesDic[datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh")] += 1
-            discussion.sentMessagesDic[datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh")] += 1
+            user, verb = 'self', 'sent'
             updateDict(self.amountOfMessagesPerDay, [datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%d/%m/%Y")])
-            if message.isARealMessage:
-                updateDict(discussion.wordsSaidAmount, message.content.split(" "))
-                discussion.sizeOfMessages['sent'] += len(message)
         else:
-            updateDict(discussion.messagesAmount, ['other']) 
-            self.amountOfReceivedMessages += 1
-            self.receivedMessagesDic[datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh")] += 1
-            discussion.receivedMessagesDic[datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh")] += 1
-            if message.isARealMessage:
-                updateDict(discussion.wordsReceivedAmount, message.content.split(" "))
-                discussion.sizeOfMessages['received'] += len(message)
+            user, verb = 'other', 'received'
+        self.sentMessagesDic.add(user, datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh"))
+        discussion.sentMessagesDic.add(user, datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh"))
+        updateDict(discussion.messagesAmount, [user])
+        self.amountOfSentMessages[user] += 1
+        if message.isARealMessage:
+            for word in message.content.split(" "):
+                discussion.wordsSaidAmount.add(user, word)
+                for letter in word:
+                    if emoji.isEmoji(letter):
+                        discussion.emojisDic.add(user, letter)
+                        if user == 'self':
+                            updateDict(self.emojisDic, [letter])
+            discussion.sizeOfMessages[verb] += len(message)
+
+            
 
     def addDiscussion(self, discussion: Discussion):
         self.discussionsList.append(discussion)

@@ -22,7 +22,8 @@ class FileManager:
       self.generateAccountData()
       self.generateRankingFile(self.menusPath, self.data.discussionsSizes, 'Top conversations.', 'messageCount')
       self.generateRankingFile(self.menusPath, self.data.discussionsAges, 'Plus anciennes conversations', 'convAge')
-      self.generateRankingFile(self.menusPath, self.data.wordsSaidAmount, 'Mots les plus employés', 'wordCounter')
+      self.generateRankingFile(self.menusPath, self.data.wordsSaidAmount.own, 'Mots les plus employés', 'wordCounter')
+      self.generateRankingFile(self.menusPath, self.data.emojisDic, 'Emojis les plus utilisés', 'emojisCounter')
       for discussion in self.data.discussionsList:
         self.writeDataConversation(discussion)
         self.writeDiscMostUsedWords(discussion)
@@ -82,20 +83,20 @@ class FileManager:
       htmlCode += f'<div class="highlight"> Plus longue conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{self.data.biggestDiscussion[0]}</span> ({self.data.biggestDiscussion[1]} messages)</div>\n'
       htmlCode += f'<div class="highlight"> Conversation la plus stable: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{self.data.mostStableDiscussion[0]}</span> ({self.data.mostStableDiscussion[1]}j de conversation à la suite)</div>\n'
 
-      htmlCode += f'<div class="highlight"> Nombre de messages envoyés: {self.data.amountOfSentMessages}</div>'
-      htmlCode += f'<div class="highlight"> Nombre de messages reçus: {self.data.amountOfReceivedMessages}</div>'
+      htmlCode += f'<div class="highlight"> Nombre de messages envoyés: {self.data.amountOfSentMessages["self"]}</div>'
+      htmlCode += f'<div class="highlight"> Nombre de messages reçus: {self.data.amountOfSentMessages["other"]}</div>'
       htmlCode += f'<div class="highlight"> Nombre de conversations: {len(self.data.discussionsList)}</div>'
       htmlCode += f'<div class="highlight"> Jour le plus actif: {max(self.data.amountOfMessagesPerDay, key=self.data.amountOfMessagesPerDay.get)}: {max(self.data.amountOfMessagesPerDay.values())} messages envoyés</div>'
-      htmlCode += f'<div class="highlight"> Période la plus active de la journée: {max(self.data.sentMessagesDic, key=self.data.sentMessagesDic.get)} ({int(100*max(self.data.sentMessagesDic.values())/sum(self.data.sentMessagesDic.values()))}% des messages)</div>'
+      htmlCode += f'<div class="highlight"> Période la plus active de la journée: {max(self.data.sentMessagesDic.sumOwnOthers(), key=self.data.sentMessagesDic.sumOwnOthers().get)} ({int(100*max(self.data.sentMessagesDic.sumOwnOthers().values())/sum(self.data.sentMessagesDic.sumOwnOthers().values()))}% des messages)</div>'
 
       # Ajout du titre
       htmlCode += '\t<header>\n<h1> Nombre de messages envoyés par heure. </h1>\n</header>\n'
       
       # Ajout d'un graphe
-      htmlCode += Html.generateGraph(self.data.sentMessagesDic)
+      htmlCode += Html.generateGraph(self.data.sentMessagesDic.own)
 
       htmlCode += '\t<header>\n<h1> Nombre de messages reçus par heure. </h1>\n</header>\n'
-      htmlCode += Html.generateGraph(self.data.receivedMessagesDic)
+      htmlCode += Html.generateGraph(self.data.sentMessagesDic.others)
       
       # Fin du body 
       htmlCode += '\n</body>'
@@ -171,23 +172,23 @@ class FileManager:
             txt += f'\t<a href="{os.path.join(self.wordsPath, discussion.dirName+".html")}" class="button">Mots les plus utilisés</a>\n</div>\n'
 
             txt += '\n<header>\n<h1>Répartition des messages</h1>\n</header>\n'
-            txt += Html.generateGraph(updateDictFromDict(discussion.sentMessagesDic, discussion.receivedMessagesDic))
+            txt += Html.generateGraph(discussion.sentMessagesDic.addSelf(discussion.sentMessagesDic.others))
 
             txt += "</body>\n</html>"
             writingFile.write(txt)
 
     def writeDiscMostUsedWords(self, discussion):
         orderedDict = OrderedDict(length=50)
-        cSize = sumOfDict(discussion.wordsSaidAmount)
-        for word, quantity in discussion.wordsSaidAmount.items():
-            wordFreq = WordFrequence(word, quantity, self.data.wordsSaidAmount[word], cSize, self.data.sumOfWordsSaid)
+        cSize = sumOfDict(discussion.wordsSaidAmount.own)
+        for word, quantity in discussion.wordsSaidAmount.own.items():
+            wordFreq = WordFrequence(word, quantity, self.data.wordsSaidAmount.own[word], cSize, self.data.sumOfWordsSaid)
             wordWeight = wordFreq.getWeight()
             orderedDict.add(word, wordWeight)
         
         dic = {}
         for key in orderedDict.getDict():
-          quantity = discussion.wordsSaidAmount[key]
-          wf = WordFrequence(key, quantity, self.data.wordsSaidAmount[key], cSize, self.data.sumOfWordsSaid)
+          quantity = discussion.wordsSaidAmount.own[key]
+          wf = WordFrequence(key, quantity, self.data.wordsSaidAmount.own[key], cSize, self.data.sumOfWordsSaid)
           dic[key] = f"{wf.convPercentage():.2f}%, *{wf.convCoeff():.2f}"
 
         self.generateRankingFile(self.wordsPath, dic, f"{discussion.title}: Mots les plus représentatifs", discussion.dirName)

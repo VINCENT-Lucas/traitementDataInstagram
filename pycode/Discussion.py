@@ -1,5 +1,6 @@
 from .util import *
 from .Message import *
+from .SelfOtherDic import * 
 
 class Discussion:
     def __init__(self, discussionName, participants, dirName) -> None:
@@ -9,10 +10,9 @@ class Discussion:
         self.participants = participants
         self.messagesList = []
         self.messagesAmount = {'self': 0, 'other':0}
-        self.wordsSaidAmount = {}
-        self.wordsReceivedAmount = {}
-        self.sentMessagesDic = {f"{hour:02d}h": 0 for hour in range(24)}
-        self.receivedMessagesDic = {f"{hour:02d}h": 0 for hour in range(24)}
+        self.emojisDic = SelfOtherDic()
+        self.wordsSaidAmount = SelfOtherDic()
+        self.sentMessagesDic = SelfOtherDic({f"{hour:02d}h": 0 for hour in range(24)}, {f"{hour:02d}h": 0 for hour in range(24)})
         self.answers = {'self': 0, 'other': 0}
         self.timeBeforeAnswer = {'self': 0, 'other': 0}
         self.biggestStreak = 0
@@ -25,7 +25,7 @@ class Discussion:
 
     def addMessagesFromList(self, discussionTitle: str, messagesList: dict):
         for message in messagesList[::-1]:
-            senderName = message['sender_name'].encode("latin1").decode("utf-8") # Peut être qu'il ne faut encoder qu'au moment de print 
+            senderName = message['sender_name'].encode("latin1").decode("utf-8") 
             timestamp = message['timestamp_ms']
             content = message['content'].encode('latin1').decode('utf-8') if 'content' in message else 'Message Vocal' if 'audio_files' in message else 'Image'
             msgObject = Message(senderName, timestamp, discussionTitle, content, 'content' in message)
@@ -50,15 +50,4 @@ class Discussion:
             messagesAmount[personName] = self.getMessageAmount(personName)
         self.messagesAmount = messagesAmount
     
-    def generateWordsAmount(self):
-        wordsAmount = {}
-        for message in self.messagesList:
-            updateDict(wordsAmount, message.getContent().split(" "))
-        self.wordsAmount = wordsAmount
-
-    def getWordsAmount(self):
-        return self.wordsAmount
-    
-    def getMessageAmount(self):
-        return self.messagesAmount
 

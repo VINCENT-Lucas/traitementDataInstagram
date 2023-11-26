@@ -197,6 +197,7 @@ class Html:
     <a href="{fileManager.menusPath}\wordCounter.html" class="button">Liste des mots les plus utilisés</a>
     <a href="{fileManager.menusPath}\convMenu.html" class="button">Voir les conversations</a>
     <a href="{fileManager.menusPath}\\accountData.html" class="button">Données du compte</a>
+    <a href="{fileManager.menusPath}\emojisCounter.html" class="button">Liste des emojis les plus utilisés</a>
   </div>
 
   <div class="image-container">

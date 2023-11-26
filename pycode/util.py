@@ -30,7 +30,6 @@ def generateRatio(globalCounterDic, convCounterDic):
   
   return dict(sorted(finalDic.items(), key=lambda item: item[1], reverse=True))
 
-
 def getCurrentDirPath(file):
     path = os.path.realpath(file)
     while path[-1] != '\\':

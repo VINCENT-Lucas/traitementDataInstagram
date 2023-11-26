@@ -10,3 +10,5 @@ from .Discussion import *
 from .Timer import *
 from .WordFrequence import *
 from .OrderedDict import *
+from .Emoji import *
+from . SelfOtherDic import *

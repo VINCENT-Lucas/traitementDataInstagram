@@ -69,7 +69,6 @@ class Calendar:
         #Fin du tableau
         dataFile.write('</tbody>\n</table>\n</div>\n</body>')
   
-
   def nextDay(self, date_str):
     dateObj = datetime.datetime.strptime(date_str, '%d/%m/%Y')
     newDate = dateObj + datetime.timedelta(days=1)
