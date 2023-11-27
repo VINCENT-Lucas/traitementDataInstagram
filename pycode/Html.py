@@ -198,6 +198,7 @@ class Html:
     <a href="{fileManager.menusPath}\convMenu.html" class="button">Voir les conversations</a>
     <a href="{fileManager.menusPath}\\accountData.html" class="button">Données du compte</a>
     <a href="{fileManager.menusPath}\emojisCounter.html" class="button">Liste des emojis les plus utilisés</a>
+    <a href="{fileManager.menusPath}\convEvolution.html" class="button">Evolution des conversations</a>
   </div>
 
   <div class="image-container">

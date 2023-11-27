@@ -17,6 +17,7 @@ class DataStock:
         self.discussionsSizes = {}
         self.discussionsAges = {}
         self.amountOfSentMessages = {'self': 0, 'other': 0}
+        self.bestFriend = {}
 
         self.sumOfWordsSaid = 0
         self.mostStableDiscussion = None
@@ -27,6 +28,8 @@ class DataStock:
         self.accountOwner = self.getAccountOwner()
         
     def getAccountOwner(self):
+        if len(self.discussionsList) == 0:
+            print("Pas de discussions détectées")
         possibilities = self.discussionsList[0].participants
         for discussion in self.discussionsList[1:]:
             for person in possibilities:
@@ -66,14 +69,15 @@ class DataStock:
         self.discussionsSizes[discussion.title] = len(discussion.messagesList)
         self.discussionsAges[discussion.title] = discussion.beginningTimeCode
 
-
-        discussion.wordsSaidAmount.own = {}
-        discussion.wordsSaidAmount.others = {}
         for message in discussion.messagesList:
             self.treatMessage(message, discussion)
         
-        self.wordsSaidAmount.addSelf(discussion.wordsSaidAmount.own)
+        self.wordsSaidAmount.addAll('self', discussion.wordsSaidAmount.own)
 
+        discussion.computeComplicityScore()
+        if self.bestFriend == {} or list(self.bestFriend.values())[0] < discussion.complicityScore:
+            self.bestFriend = {discussion.title: discussion.complicityScore}
+        
         if display:
             str = f"Chargement conversations: {i}/{discussionAmount} {discussion.title}"
             print(f"{str}  {(strlen-len(str))*' '}", end='\r')

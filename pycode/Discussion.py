@@ -1,6 +1,7 @@
 from .util import *
 from .Message import *
 from .SelfOtherDic import * 
+import math
 
 class Discussion:
     def __init__(self, discussionName, participants, dirName) -> None:
@@ -19,9 +20,15 @@ class Discussion:
         self.sizeOfMessages = {'sent':0, 'received': 0}
         self.discussionSizePerDay = {}
         self.beginningTimeCode = None
+        self.complicityScore = 0
 
     def __len__(self):
         return len(self.messagesList)
+
+    def computeComplicityScore(self):
+        timecodeDate = datetime.datetime.strptime(timestampToDate(self.beginningTimeCode), "%d/%m/%Y")
+        convAge = (datetime.datetime.now() - timecodeDate).days
+        self.complicityScore = int(math.sqrt(convAge**2 * self.messagesAmount['self'] * self.messagesAmount['other']) / (1000*len(self.participants)**2))
 
     def addMessagesFromList(self, discussionTitle: str, messagesList: dict):
         for message in messagesList[::-1]:

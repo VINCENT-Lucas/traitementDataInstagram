@@ -78,7 +78,7 @@ class FileManager:
       htmlCode += '<body>\n'
       htmlCode += f'\t<header>\n<h1> {self.data.accountOwner} </h1>\n</header>\n'
 
-      htmlCode += f'<div class="highlight"> Meilleure conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{"None"}</span> ({"None"}☆)</div>\n'
+      htmlCode += f'<div class="highlight"> Meilleure conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{list(self.data.bestFriend.keys())[0]}</span> ({list(self.data.bestFriend.values())[0]}☆)</div>\n'
       htmlCode += f'<div class="highlight"> Plus ancienne conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{self.data.mostAncientDiscussion[0]}</span> ({(datetime.datetime.now() - datetime.datetime.fromtimestamp(self.data.mostAncientDiscussion[1]/1000)).days}j)</div>\n'
       htmlCode += f'<div class="highlight"> Plus longue conversation: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{self.data.biggestDiscussion[0]}</span> ({self.data.biggestDiscussion[1]} messages)</div>\n'
       htmlCode += f'<div class="highlight"> Conversation la plus stable: <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{self.data.mostStableDiscussion[0]}</span> ({self.data.mostStableDiscussion[1]}j de conversation à la suite)</div>\n'
@@ -130,6 +130,9 @@ class FileManager:
             msgReceivedAmount = discussion.messagesAmount['other']
             listUser1 = [f"Nombre de messages envoyés: {msgSentAmount}."]
             listUser2 = [f"Nombre de messages envoyés: {msgReceivedAmount}."]
+            
+            listUser1.append(f"Emojis favoris: {','.join(list(discussion.emojisDic.own.keys())[:3])}")
+            listUser2.append(f"Emojis favoris: {','.join(list(discussion.emojisDic.others.keys())[:3])}")
 
             meanAnsLength = discussion.sizeOfMessages['sent']/msgSentAmount if msgSentAmount != 0 else 0
             listUser1.append(f"Taille moyenne des messages: {int(meanAnsLength)} caractères.")
@@ -172,7 +175,7 @@ class FileManager:
             txt += f'\t<a href="{os.path.join(self.wordsPath, discussion.dirName+".html")}" class="button">Mots les plus utilisés</a>\n</div>\n'
 
             txt += '\n<header>\n<h1>Répartition des messages</h1>\n</header>\n'
-            txt += Html.generateGraph(discussion.sentMessagesDic.addSelf(discussion.sentMessagesDic.others))
+            txt += Html.generateGraph(discussion.sentMessagesDic.sumOwnOthers())
 
             txt += "</body>\n</html>"
             writingFile.write(txt)

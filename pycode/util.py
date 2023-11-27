@@ -20,6 +20,12 @@ def updateDictFromDict(dict, dict2: dict):
             dict[key] = dict2[key]
     return dict
 
+def sumOfTwoDicts(dict1, dict2):
+    dict3 = {}
+    for key in dict1:
+      dict3[key] = dict1[key]
+    return updateDictFromDict(dict3, dict2)
+
 def generateRatio(globalCounterDic, convCounterDic):
   finalDic = {}
   for key in convCounterDic:
