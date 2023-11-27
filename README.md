@@ -28,6 +28,11 @@ Un résumé des données propre à la conversation uniquement est aussi disponib
 
 ![Données de conversation](assets/ConvData.png)
 
+Un graphe d'activité des conversations est disponible.
+En passant sa souris sur une courbe, des informations s'affichent quant à la discussion.
+
+<img src="assets/convEvolution.png" width="500">
+
 # Langages utilisés
 Ce projet est fait entièrement en Python, et j'ai essayé d'utiliser le moins de librairies possible.
 L'affichage est fait via HTML/CSS, généré par mon script Python.
