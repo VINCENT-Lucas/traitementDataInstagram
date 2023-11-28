@@ -32,33 +32,51 @@ class TimeZones:
         list = [referenceMonth]
         actualMonth = datetime.datetime.now().strftime("%m/%Y")
         while referenceMonth != actualMonth:
-            if referenceMonth[:2] != '12':
-                number = int(referenceMonth[:2])+1
-                numberToStr = str(number) if number > 9 else '0' + str(number)
-                referenceMonth = numberToStr + referenceMonth[2:]
-            else:
-                referenceMonth = '01/' + str(int(referenceMonth[3:])+1)
+            referenceMonth = TimeZones.nextMonth(referenceMonth)
             list.append(referenceMonth)
         return list
 
     def monthIsSuperior(month1, month2):
-        year1, year2 = int(month1[3:]), int(month2[3:])
-        month1, month2 = int(month1[:2]), int(month2[:2])
+        year1, year2 = int(month1[3:]), int(month2[-4:])
+        month1, month2 = int(month1[:2]), int(month2[-7:-5])
         return year1 > year2 or year1 == year2 and month1 > month2
+
+    def nextMonth(month):
+        #month : str sous forme '%m/%Y'
+        imois, iyear = int(month[:2]), int(month[3:])
+        if imois == 12:
+            return '01/' + str(iyear + 1)
+        newMonth = str(imois + 1) if imois + 1 > 9 else '0' + str(imois + 1)
+        return newMonth + '/' + str(iyear)
+
+    def mergeData(monthsL, monthsV):
+        #monthsL : Liste des mois sous format '%m/%y' depuis la création du compte
+        #monthsV : Liste d'entiers qui représentent le nombre de messages envoyés chaque mois
+        if len(monthsL)%2 == 1:
+            monthsL.append(TimeZones.nextMonth(monthsL[-1][-7:]))
+            monthsV.append(0)
+        
+        shorterMonthsL, shorterMonthsV = [], []
+        for i in range(0, len(monthsV), 2):
+            shorterMonthsL.append(monthsL[i][:7] + '-' + monthsL[i+1][-7:])
+            shorterMonthsV.append(monthsV[i] + monthsV[i+1])
+        return shorterMonthsL, shorterMonthsV
+
 
     def generateDataSet(self):
         dataSets = []
-        monthsList = TimeZones.generateMonthsFrom(datetime.datetime.fromtimestamp(self.data.mostAncientDiscussion[1]/1000).strftime("%m/%Y"))
+        monthsListRef = TimeZones.generateMonthsFrom(datetime.datetime.fromtimestamp(self.data.mostAncientDiscussion[1]/1000).strftime("%m/%Y"))
         self.generateColors(len(self.discussions))
-        #print("MonthList", monthsList)
 
         for discussion in self.discussions:
             #print(f"{discussion.title}: {len(discussion.messagesList)}, {discussion.discussionSizePerDay}")
+            monthsList = monthsListRef
             discussionDict = {'label': discussion.title}
             monthsData = []
             idays, imonths, sumMonth = 0, 0, 0
             keysList, valuesList = list(discussion.discussionSizePerDay.keys()), list(discussion.discussionSizePerDay.values())
             day, msgAmount = keysList[0], valuesList[0]
+
 
             # On itère sur les mois, on fixe leur valeur à 0 tant qu'on n'a pas atteint le mois du 1er jour de discussion
             while TimeZones.monthIsSuperior(day[3:], monthsList[imonths]):
@@ -84,12 +102,16 @@ class TimeZones:
                     sumMonth = 0
                     imonths += 1
             
+            while len(monthsList) > 40:
+                monthsList, monthsData = TimeZones.mergeData(monthsList, monthsData)
+
             discussionDict['data'] = monthsData
             discussionDict['borderColor'] = self.colorsList.pop(0)
             discussionDict['borderWidth'] = 2
             dataSets.append(discussionDict)
         self.dataSets = dataSets
         self.monthsList = monthsList
+        print(dataSets, monthsList)
 
     def writeTimeZones(self):
         self.generateDataSet()

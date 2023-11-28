@@ -1,20 +1,19 @@
-def generateColors(amount):
-        # TODO Augmenter la gamme de couleurs atteignables
-        ''' Génère amount couleurs sous forme rgba(255, 99, 132, 1)'''
-        colorsList = []
-        step = int(255/((amount//7)+1))
-        intensity = 0
-        while len(colorsList) < amount:
-            intensity += step
+import datetime
 
-            colorsList.append(f"rgba({intensity}, {0}, {0}, 1)")
-            colorsList.append(f"rgba({0}, {intensity}, {0}, 1)")
-            colorsList.append(f"rgba({0}, {0}, {intensity}, 1)")
-            colorsList.append(f"rgba({intensity}, {intensity}, {0}, 1)")
-            colorsList.append(f"rgba({0}, {intensity}, {intensity}, 1)")
-            colorsList.append(f"rgba({intensity}, {0}, {intensity}, 1)")
-            colorsList.append(f"rgba({intensity}, {intensity}, {intensity}, 1)")
+def nextMonth(month):
+        #month : str sous forme '%m/%Y'
+        imois, iyear = int(month[:2]), int(month[3:])
+        if imois == 12:
+            return '01/' + str(iyear + 1)
+        newMonth = str(imois + 1) if imois + 1 > 9 else '0' + str(imois + 1)
+        return newMonth + '/' + str(iyear)
+ 
+def generateMonthsFrom(referenceMonth):
+        list = [referenceMonth]
+        actualMonth = datetime.datetime.now().strftime("%m/%Y")
+        while referenceMonth != actualMonth:
+            referenceMonth = nextMonth(referenceMonth)
+            list.append(referenceMonth)
+        return list
 
-        return colorsList[:amount]
-
-print(generateColors(14))
+print('12/2020-01/2021'[-7:])
