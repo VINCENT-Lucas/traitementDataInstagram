@@ -8,17 +8,22 @@ class TimeZones:
         self.firstMessageDate = timestampToDate(data.mostAncientDiscussion[1])[3:]
 
     def generateColors(self, amount):
-        ''' Génère amount couleurs sous forme rgba(255, 99, 132, 1)'''
+        ''' Génère "amount" couleurs sous forme rgba(255, 99, 132, 1)'''
         colorsList = []
-        for i in range(amount):
-            # Variation des composantes RVB en fonction de l'itération
-            r = int(255 * (i / amount))
-            g = int(255 * ((i + amount // 3) / amount) % 256)
-            b = int(255 * ((i + 2 * amount // 3) / amount) % 256)
+        step = int(255/((amount//7)+1))
+        intensity = 0
+        while len(colorsList) < amount:
+            intensity += step
 
-            colorsList.append(f"rgba({r}, {g}, {b}, 1)")
+            colorsList.append(f"rgba({intensity}, {0}, {0}, 1)")
+            colorsList.append(f"rgba({0}, {intensity}, {0}, 1)")
+            colorsList.append(f"rgba({0}, {0}, {intensity}, 1)")
+            colorsList.append(f"rgba({intensity}, {intensity}, {0}, 1)")
+            colorsList.append(f"rgba({0}, {intensity}, {intensity}, 1)")
+            colorsList.append(f"rgba({intensity}, {0}, {intensity}, 1)")
+            colorsList.append(f"rgba({intensity}, {intensity}, {intensity}, 1)")
 
-        self.colorsList = colorsList
+        self.colorsList = colorsList[:amount]
 
     def monthToTimeCode(month):
         return datetime.strptime(month, '%m/%Y')
@@ -104,6 +109,10 @@ class TimeZones:
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
+        h1 {{
+            text-align: center;
+            color: #333333;
+        }}
         /* Ajoutez du style au conteneur du graphique */
         #myChartContainer {{
             width: 95%;
@@ -116,8 +125,8 @@ class TimeZones:
     </style>
 </head>
 <body>
+<h1>Evolution du nombre de messages au cours du temps</h1>
 
-<!-- Ajoutez un conteneur pour le graphique -->
 <div id="myChartContainer">
     <!-- Ajoutez un canvas où le graphique sera rendu -->
     <canvas id="myChart" width="400" height="200"></canvas>
