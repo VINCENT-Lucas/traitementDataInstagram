@@ -5,6 +5,22 @@ class Html:
     def __init__(self) -> None:
         pass
     
+    def generateConversationHTML(conversationName, messagesList, accountOwner, ConversationFile):
+        header = Html.getConversationHeader(conversationName)
+        ConversationFile.write(header + '\n<body>\n<div class="container">')
+        ancientDate = None
+        for message in messagesList:
+            txt = ''
+            messageDate = timestampToDate(message.timecode)
+            anchor_tag = ''
+            if not ancientDate or messageDate[:9] != ancientDate[:9]:
+                anchor_tag = '<a id="' + str(messageDate)[:10] + '"></a>'
+            txt += anchor_tag
+            usr = "message user1" if message.sender == accountOwner else "message user2"
+            txt += f'<div class="{usr}">\n<span class="user">{message.sender}</span>\n<span class="timestamp">{messageDate}</span>\n<div class="text">{message.content}</div>\n</div>'
+            ConversationFile.write(txt)
+        ConversationFile.write("</div>\n</body>\n</html>")
+
     def getConversationHeader(conversationName):
         return f'''<!DOCTYPE html>
 <html>
@@ -200,6 +216,7 @@ class Html:
     <a href="{fileManager.menusPath}\\accountData.html" class="button">Données du compte</a>
     <a href="{fileManager.menusPath}\emojisCounter.html" class="button">Liste des emojis les plus utilisés</a>
     <a href="{fileManager.menusPath}\convEvolution.html" class="button">Evolution des conversations</a>
+    <a href="{fileManager.menusPath}\BestDiscussions.html" class="button">Discussions les plus actives</a>
   </div>
 
   <div class="image-container">

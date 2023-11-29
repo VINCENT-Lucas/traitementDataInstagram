@@ -1,7 +1,5 @@
 import os, datetime
 from .Calendar import *
-from .Html import *
-from .Display import *
 from .WordFrequence import *
 from .OrderedDict import *
 from .TimeZones import *
@@ -18,6 +16,7 @@ class FileManager:
         self.menusPath = dic['Menus']
         self.wordsPath = dic['Mots']
 
+    ''' Writes all the output files '''
     def writeAllFiles(self):
       self.writeIndex()
       self.writeConvMenu()
@@ -31,12 +30,14 @@ class FileManager:
         self.writeDiscMostUsedWords(discussion)
       timeZone = TimeZones(self.data, self)
       timeZone.writeTimeZones()
+      timeZone.writeBestDiscThroughTime()
 
+    ''' Deletes all the output files if they exist and creates the directories'''
     def reCreateDirs(self):
       dirPaths = {}
       nameList = ["Convs", "Données", "Calendrier", "Menus", "Mots"]
       for name in nameList:
-        folder_path = os.path.join(self.rootPath, name)
+        folder_path = os.path.join(self.rootPath, 'out/' + name)
         if os.path.exists(folder_path):
             for file in os.listdir(folder_path):
                 filePath = os.path.join(folder_path, file)
@@ -48,6 +49,7 @@ class FileManager:
       
       return dirPaths
 
+    '''  Generates a ranking file'''
     def generateRankingFile(self, root, dictionary, title, fileName):
       count = 1
       with open(root + "\\"+ fileName + ".html", 'w', encoding="utf-8") as file:
@@ -63,6 +65,7 @@ class FileManager:
         
         file.write("</body>\n</html>")
 
+    ''' Generates a discussion calendar '''
     def generateCalendar(self, discussion):
       daysList = []
       prevDate = None
@@ -75,8 +78,8 @@ class FileManager:
       calendar.writeCalendar(daysList, discussion, self)
       discussion.biggestStreak = calendar.biggestStreak
     
+    ''' Generates the account's global data '''
     def generateAccountData(self):
-      # Début de la construction du code HTML
       htmlCode = Html.getAccountDataHeader()
 
       htmlCode += '<body>\n'
@@ -107,11 +110,10 @@ class FileManager:
 
       with open(os.path.join(self.menusPath, "accountData.html"), 'w', encoding="utf-8") as writingFile:
         writingFile.write(htmlCode)
-  
+
     def writeConversationFile(self, discussion, accountOwner):
-        display = Display()
         with open(os.path.join(self.conversationsPath, discussion.dirName + '.html'), 'w', encoding="utf-8") as ConversationFile:
-            display.generateConversationHTML(discussion.dirName, discussion.messagesList, accountOwner, ConversationFile)
+            Html.generateConversationHTML(discussion.dirName, discussion.messagesList, accountOwner, ConversationFile)
 
     def writeConvMenu(self):
       with open(f"{self.menusPath}\convMenu.html", 'w', encoding="utf-8") as file:

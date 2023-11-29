@@ -3,6 +3,7 @@ from .util import *
 ''' A class that represents the number of messages sent across all discussions over different periods '''
 class TimeZones:
     def __init__(self, data, filesManager) -> None:
+        self.biggestDiscussionByMonths = {}
         self.data = data
         self.filesManager = filesManager
         self.discussions = data.discussionsList
@@ -79,16 +80,22 @@ class TimeZones:
             for dic in self.dataSets:
                 dic['data'] = dic['data'][:-1]
 
+    def updateBiggestDiscussion(self, month, discussionName, amountOfMessagesThisMonth):
+        if month not in self.biggestDiscussionByMonths:
+            self.biggestDiscussionByMonths[month] = (discussionName, amountOfMessagesThisMonth)
+            return
+        if amountOfMessagesThisMonth > self.biggestDiscussionByMonths[month][1]:
+            self.biggestDiscussionByMonths[month] = (discussionName, amountOfMessagesThisMonth)
 
     def generateDataSet(self):
         ''' Generates all the data required to write the file'''
         dataSets = []
-        monthsListRef = TimeZones.generateMonthsFrom(datetime.datetime.fromtimestamp(self.data.mostAncientDiscussion[1]/1000).strftime("%m/%Y"))
+        self.allMonthsList = TimeZones.generateMonthsFrom(datetime.datetime.fromtimestamp(self.data.mostAncientDiscussion[1]/1000).strftime("%m/%Y"))
         self.generateColors(len(self.discussions))
 
         for discussion in self.discussions:
             #print(f"{discussion.title}: {len(discussion.messagesList)}, {discussion.discussionSizePerDay}")
-            monthsList = monthsListRef
+            monthsList = self.allMonthsList
             discussionDict = {'label': discussion.title}
             monthsData = []
             idays, imonths, sumMonth = 0, 0, 0
@@ -101,7 +108,6 @@ class TimeZones:
                 monthsData.append(0)
                 imonths += 1
             
-            #print(f"Sortie de boucle: jour {day}")
             while imonths < len(monthsList):
                 if day[3:] == monthsList[imonths]:
                     sumMonth += msgAmount
@@ -115,7 +121,8 @@ class TimeZones:
                     else:
                         day, msgAmount = keysList[idays], valuesList[idays]
                 else:
-                    # Cas où on change de mois
+                    # We're changing month
+                    self.updateBiggestDiscussion(monthsList[imonths], discussion.title, sumMonth)
                     monthsData.append(sumMonth)
                     sumMonth = 0
                     imonths += 1
@@ -132,6 +139,76 @@ class TimeZones:
         dataSets = self.removeEmptyPeriods()
         
         #print(dataSets, monthsList)
+
+    def writeBestDiscThroughTime(self):
+    # Crée une chaîne HTML de début
+        html_content = '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Discussions les plus actives chaque mois</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #ffcce7;  
+                margin: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;  
+            }
+            h1 {
+                color: #333333;
+                text-align: center;
+                width: 100%;  
+            }
+            .bubble {
+                background-color: #daf2dc;
+                color: #154360;
+                border-radius: 20px;  
+                width: auto;  
+                max-width: 200px;
+                padding: 8px;
+                height: 80px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 10px;
+                overflow: hidden; 
+            }
+            .bubble:nth-child(2n) {
+                background-color: #81b7d2;  
+                margin-top: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Discussions les plus actives chaque mois</h1>
+    '''
+
+        # Ajoute chaque bulle à la page
+        for key, values in self.biggestDiscussionByMonths.items():
+            if values[1] != 0:
+                html_content += f'''
+                    <div class="bubble">
+                        <div>{key}</div>
+                        <div>{values[0]}</div>
+                        <div>{values[1]}</div>
+                    </div>
+                '''
+
+        # Ajoute la fin de la structure HTML
+        html_content += '''
+        </body>
+        </html>
+        '''
+
+        # Écrit le contenu dans un fichier HTML
+        with open(os.path.join(self.filesManager.menusPath, "BestDiscussions.html"), 'w', encoding='utf-8') as htmlFile:
+            htmlFile.write(html_content)
 
     def writeTimeZones(self):
         ''' Writes the file that contains the graph of the Conversations' sizes Evolution throught time'''

@@ -10,10 +10,9 @@ webbrowser.open('index.html')
 
 '''
 New things to implement:
-- Display the most active participant of every discussion ?
-- Remove the Display class
+- Display the most active participant of every discussion
+- Show some messages sent (or voice messages ?) and you have to guess on which discussion they have been sent
 
-Done:
-- Generate the graph on the writeAllFiles() method
-- Remove the perdios where no discussion were active on the graph
+Implemented stuff:
+- - Show the most active discussion of every month
 '''

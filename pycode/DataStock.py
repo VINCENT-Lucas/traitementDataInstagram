@@ -5,7 +5,7 @@ from.Timer import *
 from .Emoji import *
 from .SelfOtherDic import *
 
-''' The class that stores all the data of an Instagram account'''
+''' The class that stores all the data of an Instagram account '''
 class DataStock:
     def __init__(self) -> None:
         self.discussionsList = []
