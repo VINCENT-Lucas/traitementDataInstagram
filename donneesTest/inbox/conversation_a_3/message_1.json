@@ -1,0 +1,47 @@
+{
+  "participants": [
+    { "name": "Noe" },
+    { "name": "Lucas" },
+    { "name": "Emilie" }
+  ],
+  "messages": [
+    {
+      "sender_name": "Noe",
+      "timestamp_ms": 1643189939615,
+      "content": "Salut, ca va ?"
+    },
+    {
+      "sender_name": "Lucas",
+      "timestamp_ms": 1642189935228,
+      "content": "Oui, tout va bien et toi ?"
+    },
+    {
+      "sender_name": "Emilie",
+      "timestamp_ms": 1641189932345,
+      "content": "Super, merci !"
+    },
+    {
+      "sender_name": "Noe",
+      "timestamp_ms": 1640189939615,
+      "content": "C est vrai"
+    },
+    {
+      "sender_name": "Emilie",
+      "timestamp_ms": 1640189935228,
+      "content": "Tu m as pas remboursee"
+    },
+    {
+      "sender_name": "Noe",
+      "timestamp_ms": 1640189931228,
+      "content": "Tu voulais dire quelque chose ?"
+    }
+  ],
+  "title": "Brosse a dent",
+  "is_still_participant": true,
+  "thread_path": "inbox/brosseadent_4896272273756278",
+  "magic_words": [],
+  "joinable_mode": {
+    "mode": 1,
+    "link": ""
+  }
+}
