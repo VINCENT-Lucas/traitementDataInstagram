@@ -1,10 +1,14 @@
 import os, datetime
 from .Html import *
 
+
+''' This class generates the Calendar for a discussion, that allows the user to visualize when messages were posted on a discussion'''
 class Calendar:
   def __init__(self) -> None:
     self.biggestStreak = 0
-    
+  
+  ''' Generates the HTML code for a calendar, with green cases for the days where messages were sent in a conversations and 
+  red for the others '''
   def writeCalendar(self, daysList, discussion, fileManager):
       with open(os.path.join(fileManager.calendarPath, discussion.dirName + '.html'), 'w', encoding="utf-8") as dataFile:
         if daysList == []:
@@ -69,8 +73,9 @@ class Calendar:
         #Fin du tableau
         dataFile.write('</tbody>\n</table>\n</div>\n</body>')
   
-  def nextDay(self, date_str):
-    dateObj = datetime.datetime.strptime(date_str, '%d/%m/%Y')
+  ''' Takes a date in the %d/%m%Y format and returns the next day in the same format '''
+  def nextDay(self, dateStr):
+    dateObj = datetime.datetime.strptime(dateStr, '%d/%m/%Y')
     newDate = dateObj + datetime.timedelta(days=1)
     newDateStr = newDate.strftime('%d/%m/%Y')
     return newDateStr

@@ -2,6 +2,7 @@ import datetime, time
 from .DataStock import *
 from .Html import *
 
+''' This class is a bit useless, it will be removed soon '''
 class Display:
     def __init__(self) -> None:
         pass

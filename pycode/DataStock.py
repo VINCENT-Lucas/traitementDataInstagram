@@ -5,6 +5,7 @@ from.Timer import *
 from .Emoji import *
 from .SelfOtherDic import *
 
+''' The class that stores all the data of an Instagram account'''
 class DataStock:
     def __init__(self) -> None:
         self.discussionsList = []
@@ -26,7 +27,8 @@ class DataStock:
         
         self.searchJsonFiles()
         self.accountOwner = self.getAccountOwner()
-        
+
+    ''' Navigates through all the discussions of the DataStock to find the userName of the account owner '''   
     def getAccountOwner(self):
         if len(self.discussionsList) == 0:
             print("Pas de discussions détectées")
@@ -38,6 +40,7 @@ class DataStock:
             if len(possibilities) == 1:
                 return possibilities[0]["name"]
 
+    ''' Navigates through all the files of the root directory and reads the datas from all json files '''
     def searchJsonFiles(self):
         inboxDirectories = getInboxDirectories()
         for inbox_directory in inboxDirectories:
@@ -57,6 +60,7 @@ class DataStock:
                             discussion.addMessagesFromList(title, jsonData["messages"])
                 if discussion: self.addDiscussion(discussion)
     
+    ''' Navigates through all the discussions to extract the data '''
     def loadData(self, fileManager, display=False):
       discussionAmount = len(self.discussionsList)
       timer = Timer()
@@ -96,6 +100,7 @@ class DataStock:
       if display:
         print(f"\nChargement termine: {timer.stop(2)}s")
     
+    ''' Stores the data of a given message '''
     def treatMessage(self, message, discussion):
         updateDict(discussion.discussionSizePerDay, [datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%d/%m/%Y")])
         emoji = Emoji()
@@ -118,14 +123,15 @@ class DataStock:
                             updateDict(self.emojisDic, [letter])
             discussion.sizeOfMessages[verb] += len(message)
 
-            
-
+    ''' Adds a discussion to the discussions list'''
     def addDiscussion(self, discussion: Discussion):
         self.discussionsList.append(discussion)
     
+    ''' Returns the length of the discussion list '''
     def getDiscussionAmount(self):
         return len(self.discussionsList)
     
+    ''' Updates all the records of the discussions '''
     def getRecords(self):
         biggestStreakName, biggestStreakAmount = self.discussionsList[0].title, self.discussionsList[0].biggestStreak
         oldestDiscussionName, oldestDiscussionValue = self.discussionsList[0].title, self.discussionsList[0].beginningTimeCode
@@ -142,6 +148,3 @@ class DataStock:
         self.mostAncientDiscussion = (oldestDiscussionName, oldestDiscussionValue)
         self.biggestDiscussion = (biggestDiscussionName, biggestDiscussionValue)
 
-    def printDiscussionNames(self):
-        for discussion in self.discussionsList:
-            print(discussion.title)

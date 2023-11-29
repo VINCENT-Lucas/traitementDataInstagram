@@ -1,11 +1,12 @@
 import math
 
+''' A class that calculates the representativeness of words within the discussions in which they are sent. '''
 class WordFrequence:
-    '''Pour un mot et une conversation donnés on a:
-        - Camount = le nombre de fois que le mot apparaît dans la conversation
-        - Tamount = le nombre de fois que le mot apparaît dans l'ensemble des conversations
-        - Csize = la taille de la conversation
-        - Tsize = la taille de l'ensemble des conversations
+    '''For a word and a Discussion we have:
+        - Camount = the amount of the word's apparitions in the discussion
+        - Tamount = the amount of the word's apparitions in all discussions
+        - Csize = the discussion's size
+        - Tsize = the sum of all discussions sizes
         '''
     def __init__(self, word, Camount, Tamount, Csize, Tsize) -> None:
         self.word = word
@@ -23,6 +24,7 @@ class WordFrequence:
     def convCoeff(self):
         return self.Camount*self.Tsize/(self.Tamount*self.Csize)
 
+    ''' Returns the representativeness of a word '''
     def getWeight(self):
         cPerc = self.convPercentage()
         cCoeff = self.convCoeff()

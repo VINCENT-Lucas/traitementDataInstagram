@@ -1,5 +1,7 @@
 from .util import *
 
+
+''' A class that stores the data of a discussion as two dictionnaries'''
 class SelfOtherDic:
     def __init__(self, ownInit=None, othersInit=None) -> None:
         if not ownInit:
@@ -11,7 +13,6 @@ class SelfOtherDic:
         else:
             self.others = othersInit
         
-
     def add(self, selfOrOther, arg, value=1):
         if selfOrOther == 'self':
             if arg in self.own:
@@ -33,7 +34,6 @@ class SelfOtherDic:
                 self.add(selfOrOther, key, listOrDic[key])
         else:
             raise("ArgError")
-
 
     def sort(self):
         self.own = dict(sorted(self.own.items(), key=lambda item: item[1], reverse=True))

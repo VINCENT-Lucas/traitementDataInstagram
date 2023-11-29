@@ -1,5 +1,6 @@
 from .util import *
 
+''' Generates all the invariant HTML code required for the files'''
 class Html:
     def __init__(self) -> None:
         pass

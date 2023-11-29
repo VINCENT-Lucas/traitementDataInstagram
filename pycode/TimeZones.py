@@ -1,5 +1,6 @@
 from .util import *
 
+''' A class that represents the number of messages sent across all discussions over different periods '''
 class TimeZones:
     def __init__(self, data, filesManager) -> None:
         self.data = data
@@ -8,7 +9,7 @@ class TimeZones:
         self.firstMessageDate = timestampToDate(data.mostAncientDiscussion[1])[3:]
 
     def generateColors(self, amount):
-        ''' Génère "amount" couleurs sous forme rgba(255, 99, 132, 1)'''
+        ''' Generates "amount" colors in the format: rgba(255, 99, 132, 1)'''
         colorsList = []
         step = int(255/((amount//7)+1))
         intensity = 0
@@ -26,9 +27,11 @@ class TimeZones:
         self.colorsList = colorsList[:amount]
 
     def monthToTimeCode(month):
+        ''' Converts a timecode to a month under %m/%Y format '''
         return datetime.strptime(month, '%m/%Y')
 
     def generateMonthsFrom(referenceMonth):
+        ''' Generates the list of months between now and the reference month '''
         list = [referenceMonth]
         actualMonth = datetime.datetime.now().strftime("%m/%Y")
         while referenceMonth != actualMonth:
@@ -37,12 +40,13 @@ class TimeZones:
         return list
 
     def monthIsSuperior(month1, month2):
+        ''' Return True if the first number in parameter is more recent that the second one. (for example 08/2020 > 08/2019) '''
         year1, year2 = int(month1[3:]), int(month2[-4:])
         month1, month2 = int(month1[:2]), int(month2[-7:-5])
         return year1 > year2 or year1 == year2 and month1 > month2
 
     def nextMonth(month):
-        #month : str sous forme '%m/%Y'
+        ''' Takes a month in the '%m/%Y format and returns the next month '''
         imois, iyear = int(month[:2]), int(month[3:])
         if imois == 12:
             return '01/' + str(iyear + 1)
@@ -50,8 +54,9 @@ class TimeZones:
         return newMonth + '/' + str(iyear)
 
     def mergeData(monthsL, monthsV):
-        #monthsL : Liste des mois sous format '%m/%y' depuis la création du compte
-        #monthsV : Liste d'entiers qui représentent le nombre de messages envoyés chaque mois
+        ''' Takes a list of periods and a list of values associated to these periods, and return a list of new periods and the list of
+        values associated to these periods. Example: 
+        merge(['08/2020', '09/2020', '10/2020', '11/2020'], [1,2,3,4]) returns ['08/2020-09/2020', '10/2020-11/2020'], [3, 7]'''
         if len(monthsL)%2 == 1:
             monthsL.append(TimeZones.nextMonth(monthsL[-1][-7:]))
             monthsV.append(0)
@@ -62,8 +67,21 @@ class TimeZones:
             shorterMonthsV.append(monthsV[i] + monthsV[i+1])
         return shorterMonthsL, shorterMonthsV
 
+    def endsWithAnEmptyPeriod(self):
+        for dict in self.dataSets:
+            if dict['data'][-1] != 0:
+                return False
+        return True
+
+    def removeEmptyPeriods(self):
+        while self.endsWithAnEmptyPeriod():
+            self.monthsList = self.monthsList[:-1]
+            for dic in self.dataSets:
+                dic['data'] = dic['data'][:-1]
+
 
     def generateDataSet(self):
+        ''' Generates all the data required to write the file'''
         dataSets = []
         monthsListRef = TimeZones.generateMonthsFrom(datetime.datetime.fromtimestamp(self.data.mostAncientDiscussion[1]/1000).strftime("%m/%Y"))
         self.generateColors(len(self.discussions))
@@ -111,14 +129,18 @@ class TimeZones:
             dataSets.append(discussionDict)
         self.dataSets = dataSets
         self.monthsList = monthsList
-        print(dataSets, monthsList)
+        dataSets = self.removeEmptyPeriods()
+        
+        #print(dataSets, monthsList)
 
     def writeTimeZones(self):
+        ''' Writes the file that contains the graph of the Conversations' sizes Evolution throught time'''
         self.generateDataSet()
         with open(os.path.join(self.filesManager.menusPath, 'convEvolution.html'), 'w', encoding="utf-8") as writingFile:
             writingFile.write(self.generateOutput())
 
     def generateOutput(self):
+        ''' Returns the HTML code for the graph of the Conversations' sizes Evolution throught time'''
         return f'''
 <!DOCTYPE html>
 <html lang="en">
@@ -127,7 +149,6 @@ class TimeZones:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Évolution des conversations</title>
     
-    <!-- Inclure la bibliothèque Chart.js depuis CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -135,7 +156,6 @@ class TimeZones:
             text-align: center;
             color: #333333;
         }}
-        /* Ajoutez du style au conteneur du graphique */
         #myChartContainer {{
             width: 95%;
             margin: 0;
@@ -150,12 +170,10 @@ class TimeZones:
 <h1>Evolution du nombre de messages au cours du temps</h1>
 
 <div id="myChartContainer">
-    <!-- Ajoutez un canvas où le graphique sera rendu -->
     <canvas id="myChart" width="400" height="200"></canvas>
 </div>
 
 <script>
-    // Données du graphique
     var data = {{
         labels: {self.monthsList},
         datasets: {self.dataSets}
@@ -169,7 +187,6 @@ class TimeZones:
         }});
     }});
 
-    // Options du graphique
     var options = {{
         scales: {{
             y: {{
@@ -184,10 +201,8 @@ class TimeZones:
         animation: false
     }};
 
-    // Récupérez le contexte du canvas
     var ctx = document.getElementById('myChart').getContext('2d');
 
-    // Créez le graphique en ligne
     var myChart = new Chart(ctx, {{
         type: 'line',
         data: data,

@@ -1,4 +1,4 @@
-
+''' Represents an Instagram Message, with all the informations it has'''
 class Message:
     def __init__(self, sender, timecode, discussionName, content, isARealMessage=True) -> None:
         self.sender = sender

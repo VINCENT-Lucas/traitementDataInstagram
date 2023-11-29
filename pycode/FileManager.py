@@ -4,7 +4,9 @@ from .Html import *
 from .Display import *
 from .WordFrequence import *
 from .OrderedDict import *
+from .TimeZones import *
 
+''' Writes the HTML files that are generated from our data '''
 class FileManager:
     def __init__(self, root, data) -> None:
         self.rootPath = root
@@ -27,6 +29,8 @@ class FileManager:
       for discussion in self.data.discussionsList:
         self.writeDataConversation(discussion)
         self.writeDiscMostUsedWords(discussion)
+      timeZone = TimeZones(self.data, self)
+      timeZone.writeTimeZones()
 
     def reCreateDirs(self):
       dirPaths = {}

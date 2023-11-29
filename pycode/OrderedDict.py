@@ -1,3 +1,4 @@
+''' Just an Ordered Dictionnary that implements the add() method '''
 class OrderedDict:
     def __init__(self, length) -> None:
         self.length = length
