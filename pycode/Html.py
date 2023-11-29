@@ -32,7 +32,7 @@ class Html:
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
-      background-color: #fafafa;
+      background-color: {BACKGROUND_COLOR};
       font-family: Arial, sans-serif;
     }}
     .message {{
@@ -42,7 +42,7 @@ class Html:
     }}
     .user {{
       font-weight: bold;
-      color: #3897f0;
+      color: {TITLE_COLOR};
     }}
     .timestamp {{
       font-size: 12px;
@@ -53,79 +53,82 @@ class Html:
     }}
     .user1 {{
       text-align: right;
-      background-color: #f3f0f0;
+      background-color: {COLOR1};
     }}
     .user2 {{
       text-align: left;
-      background-color: #ffffff;
+      background-color: {COLOR2};
+    }}
+    body {{
+      background-color: {BACKGROUND_COLOR}; /* Couleur de fond de la page */
     }}
   </style>
 </head>
     '''
-
+    
     def getCalendarHeader():
-        return '''<!DOCTYPE html>
+        return f'''<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    header {
+    header {{
       font-weight: bold;
       text-align: center; /* Centrer le titre */
       color: #2d2c2c; /* Couleur du texte de l'en-tête */
       text-shadow: 1px 1px 2px #000; /* Ajouter une ombre au texte */
-    }
-    .table {
+    }}
+    .table {{
       border-collapse: collapse;
       margin-left: auto;
       margin-right: auto;
-    }
-    .table td {
+    }}
+    .table td {{
       width: 10px;
       height: 10px;
       border: 4px solid black;
-    }
-    .table .red {
+    }}
+    .table .red {{
       background-color: rgba(175, 40, 40, 0.666);
-    }
-    .table .green {
+    }}
+    .table .green {{
       background-color: rgba(76, 175, 40, 0.666);
-    }
-    .table .grey {
+    }}
+    .table .grey {{
       background-color: grey;
-    }
-    .table .bottomLine {
+    }}
+    .table .bottomLine {{
       border: none;
       border-bottom: 4px solid black; 
-    }
-    .table .number {
+    }}
+    .table .number {{
       text-align: center;
       font-weight: bold;
-    }
-    .table .number-cell {
+    }}
+    .table .number-cell {{
       border: none;
-    }
-    .container {
+    }}
+    .container {{
       display: flex;
       align-items: center;
-    }
-    .text {
+    }}
+    .text {{
       margin-right: 10px;
       font-weight: bold;
-    }
-    .table .year-cell {
+    }}
+    .table .year-cell {{
       border: none;
       writing-mode: vertical-lr;
       text-orientation: mixed;
       white-space: nowrap;
       transform: rotate(180deg);
-    }
-    .transition-line td {
+    }}
+    .transition-line td {{
       border-bottom: 8px solid black;
-    }
-    body {
-      background-color: #d8ecf1; /* Couleur de fond de la page */
-    }
+    }}
+    body {{
+      background-color: {BACKGROUND_COLOR}; /* Couleur de fond de la page */
+    }}
   </style>
 </head>\n'''
 
@@ -142,7 +145,7 @@ class Html:
       font-size: 40px;
       margin-top: 50px;
       text-align: center;
-      color: #2d2c2c;
+      color: {COLOR2};
       text-shadow: 0px 0px 0px #000;
     }}
     tag {{
@@ -150,7 +153,7 @@ class Html:
       font-weight: bold;
       font-size: 40px;
       text-align: center;
-      color: #2d2c2c;
+      color: {COLOR2};
     }}
     body {{
       font-family: Arial, sans-serif;
@@ -162,7 +165,7 @@ class Html:
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin: 50px 100px 0px 100px;
+      margin-top: 20px;
     }}
     .button-container a {{
       text-decoration: none;
@@ -172,7 +175,7 @@ class Html:
       display: inline-block;
       padding: 10px 20px;
       background-color: #3b3e3e63;
-      color: #ffffff;
+      color: {COLOR2};
       border-radius: 4px;
       font-size: 16px;
       transition: background-color 0.3s ease;
@@ -195,7 +198,6 @@ class Html:
       justify-content: center;
       align-items: center;
       min-height: 40vh;
-      margin-top: 50px;
     }}
     .image-container img {{
       max-width: 5%;
@@ -228,50 +230,50 @@ class Html:
 '''
 
     def getConvMenuHeader():
-        return '''<!DOCTYPE html>
+        return f'''<!DOCTYPE html>
   <html>
   <head>
     <title>Conversations Instagram</title>
     <style>
-      body {
+      body {{
         font-family: Arial, sans-serif;
-        background-color: #f2f2f2;
+        background-color: {BACKGROUND_COLOR};
         margin: 0;
         padding: 20px;
-      }
-      h1 {
+      }}
+      h1 {{
         text-align: center;
-        color: #333333;
-      }
-      ul {
+        color: {TITLE_COLOR};
+      }}
+      ul {{
         list-style-type: none;
         padding: 0;
-      }
-      li {
+      }}
+      li {{
         margin-bottom: 10px;
-      }
-      a {
+      }}
+      a {{
         display: block;
-        background-color: #ffffff;
+        background-color: {COLOR2};
         border: 1px solid #dddddd;
         border-radius: 4px;
         padding: 10px;
-        color: #333333;
+        color: #000000;
         text-decoration: none;
         transition: background-color 0.3s ease;
-      }
-      a:hover {
-        background-color: #dddddd;
-      }
-      .button {
-        background-color: #c6e3bc;
+      }}
+      a:hover {{
+        background-color: {TITLE_COLOR};
+      }}
+      .button {{
+        background-color: {COLOR1};
         color: white;
         border: none;
         border-radius: 4px;
         padding: 5px 10px;
         font-size: 12px;
         cursor: pointer;
-      }
+      }}
     </style>
   </head>
   <body>
@@ -279,44 +281,44 @@ class Html:
     <ul>'''
     
     def getAccountDataHeader():
-        return '''<!DOCTYPE html>
+        return f'''<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    header {
+    header {{
       font-weight: bold;
       text-align: center; /* Centrer le titre */
-      color: #2d2c2c; /* Couleur du texte de l'en-tête */
+      color: {TITLE_COLOR}; /* Couleur du texte de l'en-tête */
       text-shadow: 1px 1px 2px #000; /* Ajouter une ombre au texte */
-    }
-    .highlight {
+    }}
+    .highlight {{
       text-align: center;
       padding: 5px;
       font-size: 20px;
       font-weight: bold;
-    }
-    .table {
+    }}
+    .table {{
       border-collapse: collapse;
       margin-left: auto;
       margin-right: auto;
-    }
-    .table td {
+    }}
+    .table td {{
       width: 20px;
       height: 20px;
       border-right: 4px solid black; /* Bordure à droite */
       border-left: 4px solid black;  /* Bordure à gauche */
-    }
-    .table .number-cell {
+    }}
+    .table .number-cell {{
       border: none;
-    }
-    .container {
+    }}
+    .container {{
       display: flex;
       align-items: center;
-    }
-    body {
-      background-color: #d8ecf1; /* Couleur de fond de la page */
-    }
+    }}
+    body {{
+      background-color: {BACKGROUND_COLOR}; /* Couleur de fond de la page */
+    }}
   </style>
 </head>\n'''
 
@@ -363,62 +365,64 @@ class Html:
         return htmlCode
 
     def getRankingHeader(title):
-        return'''
+        return '''
     <!DOCTYPE html>
     <html>
     <head>
-        <title>'''+title+'''</title>
+        <title>'''+title+f'''</title>
         <meta charset="utf-8">
         <style>
-            body {
+            body {{
                 font-family: Arial, sans-serif;
-                background-color: #f2f2f2;
+                background-color: {BACKGROUND_COLOR};
                 padding: 20px;
                 margin: 0;
-            }
+            }}
 
-            h1 {
-                color: #333333;
+            h1 {{
+                color: {TITLE_COLOR};
                 text-align: center;
-            }
+            }}
 
-            .row {
+            .row {{
                 display: flex;
                 justify-content: center;
-            }
+            }}
 
-            .box {
-                background-color: #ffffff;
+            .box {{
+                background-color: {COLOR2};
                 padding: 10px;
                 margin-bottom: 10px;
                 border-radius: 5px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 text-align: center;
-            }
+            }}
 
-            .box:not(:last-child) {
+            .box:not(:last-child) {{
                 margin-right: 10px;
-            }
+            }}
 
-            .box:nth-child(1) {
+            .box:nth-child(1) {{
                 font-size: 22px;
                 border-top-left-radius: 15px;
                 border-top-right-radius: 15px;
                 border-bottom-left-radius: 15px;
                 border-bottom-right-radius: 15px;
-            }
+            }}
 
-            .box:nth-child(2) {
-                font-size: 20px;
-            }
+            .box:nth-child(2) {{
+              background-color: {COLOR1};
+              font-size: 20px;
+            }}
 
-            .box:nth-child(3) {
+            .box:nth-child(3) {{
+                background-color: {COLOR1};
                 font-size: 18px;
                 border-top-left-radius: 15px;
                 border-top-right-radius: 15px;
                 border-bottom-left-radius: 15px;
                 border-bottom-right-radius: 15px;
-            }
+            }}
         </style>
     </head>
     <body>
@@ -426,62 +430,63 @@ class Html:
     '''
 
     def dataGetHeader():
-        return '''<!DOCTYPE html>
+        return f'''<!DOCTYPE html>
 <html>
 <head>
   <title>Données de conversation</title>
   <meta charset="utf-8">
   <style>
-    body {
+    body {{
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f2f2f2;
-    }
-    header {
+      background-color: {BACKGROUND_COLOR};
+    }}
+    header {{
       font-weight: bold;
       text-align: center;
       color: #333;
       padding: 20px;
-      background-color: #fff;
+      background-color:  {BACKGROUND_COLOR};
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       text-shadow: 1px 1px 2px #000;
-    }
-    .container {
+    }}
+    .container {{
       display: flex;
       justify-content: space-around;
       max-width: 800px;
+      background-color:  {BACKGROUND_COLOR};
       margin: 20px auto;
-    }
-    .column {
+    }}
+    .column {{
       flex: 1;
       padding: 20px;
-      background-color: #fff;
+      background-color: {COLOR2};
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
-    }
-    h2 {
+    }}
+    h2 {{
       color: #555;
-    }
-    ul {
+    }}
+    ul {{
       list-style: none;
       padding: 0;
-    }
-    li {
+    }}
+    li {{
       margin-bottom: 10px;
       color: #666;
-    }
-    .table {
+    }}
+    .table {{
       border-collapse: collapse;
       margin-left: auto;
       margin-right: auto;
-    }
-    .button-container {
+    }}
+    .button-container {{
       text-align: center;
       margin-top: 20px;
       margin-bottom: 40px;
-    }
-    .button {
+    }}
+    .button {{
       padding: 10px 20px;
       background-color: #86c088;
       color: white;
@@ -489,10 +494,10 @@ class Html:
       font-size: 16px;
       border-radius: 4px;
       transition: background-color 0.3s ease;
-    }
-    .button:hover {
-      background-color: #639e6e;
-    }
+    }}
+    .button:hover {{
+      background-color: {COLOR1};
+    }}
   </style>
 </head>
 '''

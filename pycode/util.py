@@ -1,5 +1,11 @@
 import os, datetime
 
+BACKGROUND_COLOR = "#FFCAD4"
+COLOR1 = "#D8E2DC"
+COLOR2 = "#FFE5D9"
+COLOR3 = "#F4ACB7"
+TITLE_COLOR = "#9D8189"
+
 def timestampToDate(timestamp):
     return datetime.datetime.fromtimestamp(timestamp/1000).strftime("%d/%m/%Y")
 

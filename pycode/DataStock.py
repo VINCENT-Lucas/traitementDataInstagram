@@ -113,15 +113,19 @@ class DataStock:
         discussion.sentMessagesDic.add(user, datetime.datetime.fromtimestamp(message.timecode/1000).strftime("%Hh"))
         updateDict(discussion.messagesAmount, [user])
         self.amountOfSentMessages[user] += 1
+
         if message.isARealMessage:
-            for word in message.content.split(" "):
-                discussion.wordsSaidAmount.add(user, word)
-                for letter in word:
-                    if emoji.isEmoji(letter):
-                        discussion.emojisDic.add(user, letter)
-                        if user == 'self':
-                            updateDict(self.emojisDic, [letter])
-            discussion.sizeOfMessages[verb] += len(message)
+            if message.share:
+                discussion.sharedContent[user] += 1
+            else:
+                for word in message.content.split(" "):
+                    discussion.wordsSaidAmount.add(user, word)
+                    for letter in word:
+                        if emoji.isEmoji(letter):
+                            discussion.emojisDic.add(user, letter)
+                            if user == 'self':
+                                updateDict(self.emojisDic, [letter])
+                discussion.sizeOfMessages[verb] += len(message)
 
     ''' Adds a discussion to the discussions list'''
     def addDiscussion(self, discussion: Discussion):

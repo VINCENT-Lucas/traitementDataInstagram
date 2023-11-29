@@ -136,7 +136,10 @@ class FileManager:
             msgReceivedAmount = discussion.messagesAmount['other']
             listUser1 = [f"Nombre de messages envoyés: {msgSentAmount}."]
             listUser2 = [f"Nombre de messages envoyés: {msgReceivedAmount}."]
-            
+
+            listUser1.append(f"Nombre de reels envoyes: {discussion.sharedContent['self']}")
+            listUser2.append(f"Nombre de reels envoyes: {discussion.sharedContent['other']}")
+
             listUser1.append(f"Emojis favoris: {','.join(list(discussion.emojisDic.own.keys())[:3])}")
             listUser2.append(f"Emojis favoris: {','.join(list(discussion.emojisDic.others.keys())[:3])}")
 

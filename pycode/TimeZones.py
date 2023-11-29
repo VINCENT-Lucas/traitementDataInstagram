@@ -87,6 +87,10 @@ class TimeZones:
         if amountOfMessagesThisMonth > self.biggestDiscussionByMonths[month][1]:
             self.biggestDiscussionByMonths[month] = (discussionName, amountOfMessagesThisMonth)
 
+    def getMinMaxOfDiscussions(self):
+        amountList = sorted(self.biggestDiscussionByMonths.values(), key=lambda item: item[1])
+        return amountList[0][1], amountList[-1][1]
+
     def generateDataSet(self):
         ''' Generates all the data required to write the file'''
         dataSets = []
@@ -140,9 +144,14 @@ class TimeZones:
         
         #print(dataSets, monthsList)
 
+    def sortBiggestDiscDic(self):
+        formattedData = {datetime.datetime.strptime(key, '%m/%Y'): value for key, value in self.biggestDiscussionByMonths.items()}
+        sortedData = dict(sorted(formattedData.items()))
+        self.biggestDiscussionByMonths = {key.strftime('%m/%Y'): value for key, value in sortedData.items()}
+
     def writeBestDiscThroughTime(self):
     # Crée une chaîne HTML de début
-        html_content = '''
+        html_content = f'''
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -150,22 +159,22 @@ class TimeZones:
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Discussions les plus actives chaque mois</title>
         <style>
-            body {
+            body {{
                 font-family: Arial, sans-serif;
-                background-color: #ffcce7;  
+                background-color: {BACKGROUND_COLOR};  
                 margin: 20px;
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: flex-start;  
-            }
-            h1 {
-                color: #333333;
+            }}
+            h1 {{
+                color : {TITLE_COLOR};
                 text-align: center;
                 width: 100%;  
-            }
-            .bubble {
-                background-color: #daf2dc;
+            }}
+            .bubble {{
+                background-color: {COLOR3};
                 color: #154360;
                 border-radius: 20px;  
                 width: auto;  
@@ -178,24 +187,25 @@ class TimeZones:
                 align-items: center;
                 margin: 10px;
                 overflow: hidden; 
-            }
-            .bubble:nth-child(2n) {
-                background-color: #81b7d2;  
+            }}
+            .bubble:nth-child(2n) {{
+                background-color: {COLOR2};  
                 margin-top: 50px;
-            }
+            }}
         </style>
     </head>
     <body>
         <h1>Discussions les plus actives chaque mois</h1>
     '''
-
+        min, max = self.getMinMaxOfDiscussions()
         # Ajoute chaque bulle à la page
+        self.sortBiggestDiscDic()
         for key, values in self.biggestDiscussionByMonths.items():
             if values[1] != 0:
                 html_content += f'''
-                    <div class="bubble">
+                    <div class="bubble" style="width: {int(90+(300*values[1]/max))}px; height: {int(50+(200*values[1]/max))}px;">
                         <div>{key}</div>
-                        <div>{values[0]}</div>
+                        <div>{values[0][:30]}</div>
                         <div>{values[1]}</div>
                     </div>
                 '''
@@ -229,15 +239,19 @@ class TimeZones:
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
+        body {{
+            background-color: {BACKGROUND_COLOR};
+        }}
         h1 {{
+            background-color: {BACKGROUND_COLOR};
             text-align: center;
-            color: #333333;
+            color: {TITLE_COLOR};
         }}
         #myChartContainer {{
             width: 95%;
             margin: 0;
             padding: 20px;
-            background-color: #f8f8f8;
+            background-color: {BACKGROUND_COLOR};
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }}

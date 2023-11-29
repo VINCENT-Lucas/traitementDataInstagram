@@ -13,6 +13,7 @@ class Discussion:
         self.messagesList = []
         self.messagesAmount = {'self': 0, 'other':0}
         self.emojisDic = SelfOtherDic()
+        self.sharedContent = {'self': 0, 'other':0}
         self.wordsSaidAmount = SelfOtherDic()
         self.sentMessagesDic = SelfOtherDic({f"{hour:02d}h": 0 for hour in range(24)}, {f"{hour:02d}h": 0 for hour in range(24)})
         self.answers = {'self': 0, 'other': 0}
@@ -38,8 +39,9 @@ class Discussion:
         for message in messagesList[::-1]:
             senderName = message['sender_name'].encode("latin1").decode("utf-8") 
             timestamp = message['timestamp_ms']
+            share = message['share'] if 'share' in message else None
             content = message['content'].encode('latin1').decode('utf-8') if 'content' in message else 'Message Vocal' if 'audio_files' in message else 'Image'
-            msgObject = Message(senderName, timestamp, discussionTitle, content, 'content' in message)
+            msgObject = Message(senderName, timestamp, discussionTitle, content, 'content' in message, share)
             self.addMessage(msgObject)
 
     ''' Returns the amount of the Discussion's participants '''
