@@ -13,6 +13,8 @@ Le graphique affiché montre le nombre de messages envoyés à chaque tranche ho
 ![Plus longues conversations](assets/topConversations.png)
 ## Mots les plus employés
 ![Mots les plus employés](assets/mostUsedWords.png)
+## Emojis les plus envoyés
+![Mots les plus employés](assets/mostUsedEmojis.png)
 ## Plus anciennes conversations
 ![Plus anciennes conversations](assets/ConvAge.png)
 
@@ -28,10 +30,18 @@ Un résumé des données propre à la conversation uniquement est aussi disponib
 
 ![Données de conversation](assets/ConvData.png)
 
+On détecte aussi quels sont les mots les plus représentatifs de chaque discussion, avec le pourcentage d'apparition du messages dans la conversation, et le taux d'apparition par rapport à la moyenne de chaque mot.
+
+![Représentativeté des mots](assets/ConvRepresentativeness.png)
+
 Un graphe d'activité des conversations est disponible.
 En passant sa souris sur une courbe, des informations s'affichent quant à la discussion.
 
 <img src="assets/convEvolution.png" width="500">
+
+Une autre visualisation de l'activité des conversations:
+
+<img src="assets/mostActiveConv.png" width="500">
 
 # Langages utilisés
 Ce projet est fait entièrement en Python, et j'ai essayé d'utiliser le moins de librairies possible.
