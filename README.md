@@ -48,7 +48,7 @@ Ce projet est fait entièrement en Python, et j'ai essayé d'utiliser le moins d
 L'affichage est fait via HTML/CSS, généré par mon script Python.
 
 # Télécharger ses données Instagram
-Ouvrir [ce lien]([URL_du_lien](https://accountscenter.instagram.com/info_and_permissions/dyi/?entry_point=deeplink_screen)https://accountscenter.instagram.com/info_and_permissions/dyi/?entry_point=deeplink_screen) vers Instagram, puis "Sélectionner les types d'information", "Messages", "Période -> Depuis le début", "Format -> JSON", "Envoyer la demande"
+Ouvrir [ce lien]([https://accountscenter.instagram.com/info_and_permissions/dyi/?entry_point=deeplink_screen]) vers Instagram, puis "Sélectionner les types d'information", "Messages", "Période -> Depuis le début", "Format -> JSON", "Envoyer la demande"
 
 Les fichiers devraient être envoyés par mail dans les 48H.
 
