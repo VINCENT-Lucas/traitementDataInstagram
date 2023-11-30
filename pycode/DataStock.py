@@ -38,7 +38,7 @@ class DataStock:
                 if person not in discussion.participants:
                     possibilities.remove(person)
             if len(possibilities) == 1:
-                return possibilities[0]["name"]
+                return possibilities[0]["name"].encode('latin1').decode('utf-8')
 
     ''' Navigates through all the files of the root directory and reads the datas from all json files '''
     def searchJsonFiles(self):
